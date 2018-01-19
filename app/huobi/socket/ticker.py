@@ -65,6 +65,12 @@ class Ticker:
         elif 'ping' in message:
             self.ws.send(json.dumps({"pong": message['ping']}))
 
+    def on_error(self,ws,message):
+        logging.error(message)
+        self.isReady = False
+        time.sleep(1)
+        logging.info('Restart The Socket')
+        self.start()
 
     def on_close(self, ws):
         self.isReady = False
@@ -77,6 +83,6 @@ class Ticker:
     def start(self):
         logging.info('huobi tick start')
         self.ws = websocket.WebSocketApp('wss://api.huobi.pro/ws', on_open=self.on_open, on_message=self.on_message,
-                                         on_close=self.on_close)
+                                         on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

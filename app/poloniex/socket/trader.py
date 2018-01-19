@@ -85,6 +85,7 @@ class Trader:
             logging.error(message)
             return
         if message[0] in self.marketChannel:
+            self.isReady = True
             if message[1] == 2:
                 return
             args = []
@@ -122,6 +123,12 @@ class Trader:
                     side = 'asks' if a == 0 else 'bids'
                     for i in data[a]:
                         self.initOrder(i, data[a][i], side, cp)
+    def on_error(self,ws,message):
+        logging.error(message)
+        self.isReady = False
+        time.sleep(1)
+        logging.info('Restart The Socket')
+        self.start()
 
     def on_close(self, ws ):
         self.isReady = False
@@ -134,6 +141,6 @@ class Trader:
     def start(self):
         logging.info('poloniex trader start')
         self.ws = websocket.WebSocketApp('wss://api2.poloniex.com', on_open=self.on_open, on_message=self.on_message,
-                                         on_close=self.on_close)
+                                         on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

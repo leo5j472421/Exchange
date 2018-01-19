@@ -1,8 +1,7 @@
-import websocket
+import websocket, logging
 from ..model.ticker import Ticker as t
 from ..function import *
 from threading import Thread
-import logging
 
 class Ticker:
     def __init__(self, notice=None,currencypair=['BTC_USDT','ETH_USDT'],targe=['BTC_USDT']):
@@ -11,6 +10,7 @@ class Ticker:
         self.currencypair = currencypair
         self.notice = notice
         self.targe = targe
+        self.lastTime = time.time()
 
     def _callback(self, callback, *args):
         if callback:
@@ -20,13 +20,27 @@ class Ticker:
                 logging.error("error from callback {}: {}".format(callback, e))
 
     def on_open(self, ws):
+        self.lastTime = time.time()
         self.isReady = False
         for cp in self.currencypair:
             subscript(ws,cp)
         logging.info('init OKEx\'s market Data')
 
+    def on_error(self,ws,message):
+        logging.error(message)
+        self.isReady = False
+        time.sleep(1)
+        logging.info('Restart The Socket')
+        self.start()
+
     def on_message(self, ws, message):
-        message = json.loads(message)[0]
+        message = json.loads(message)
+        if type(message) is dict:
+            return #{"event":"pong"}
+        if time.time() - self.lastTime > 30 :
+            ws.send('{"event":"ping"}')
+            self.lastTime = time.time()
+        message = message[0]
         channel = message['channel'].replace('ok_sub_spot_','').replace('_ticker','')
         if 'result' in message['data'].keys():
             if message['data']['result']:
@@ -55,6 +69,6 @@ class Ticker:
         logging.basicConfig(level=logging.INFO)
         logging.info('OKEx tick start')
         self.ws = websocket.WebSocketApp('wss://real.okex.com:10441/websocket', on_open=self.on_open, on_message=self.on_message,
-                                         on_close=self.on_close)
+                                         on_close=self.on_close,on_error=self.on_error )
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

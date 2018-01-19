@@ -1,9 +1,8 @@
 from ..model.trader import Trader as td
 from ..model.traders import Traders
-import websocket,gzip
+import websocket, logging
 from threading import Thread
 from ..function import *
-import logging
 
 class Trader:
     def __init__(self, currencypair=['BTC_USDT']):
@@ -14,6 +13,7 @@ class Trader:
         self.currencypair = currencypair
         for a in self.currencypair:
             self.data.update({a: Traders()})
+        self.lastTime = time.time()
     def resetData(self,currencypair):
         self.data = {}
         for a in currencypair:
@@ -24,9 +24,21 @@ class Trader:
         for c in self.currencypair:
             subscript(ws, c , 'trader' )
 
+    def on_error(self,ws,message):
+        logging.error(message)
+        self.isReady = False
+        time.sleep(1)
+        logging.info('Restart The Socket')
+        self.start()
 
     def on_message(self, ws, message):
-        message = json.loads(message)[0]
+        message = json.loads(message)
+        if type(message) is dict:
+            return #{"event":"pong"}
+        message = message[0]
+        if time.time() - self.lastTime > 30 :
+            ws.send('{"event":"ping"}')
+            self.lastTime = time.time()
         channel = message['channel'].replace('ok_sub_spot_','').replace('_depth','')
         if 'result' in message['data'].keys():
             if message['data']['result']:
@@ -34,6 +46,7 @@ class Trader:
             else:
                 logging.error(message['data']['error_msg'])
         if channel in self.currencypair:
+            self.isReady = True
             for side in message['data']:
                 if side == 'asks':
                     for a in message['data']['asks']:
@@ -65,6 +78,6 @@ class Trader:
     def start(self):
         logging.info('OKEx trader start')
         self.ws = websocket.WebSocketApp('wss://real.okex.com:10441/websocket', on_open=self.on_open, on_message=self.on_message,
-                                         on_close=self.on_close)
+                                         on_close=self.on_close,on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

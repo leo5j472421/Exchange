@@ -76,6 +76,13 @@ class Ticker:
         elif message[0] == 1010:
             self.isReady = False
 
+    def on_error(self,ws,message):
+        logging.error(message)
+        self.isReady = False
+        time.sleep(1)
+        logging.info('Restart The Socket')
+        self.start()
+
     def on_close(self, ws):
         self.isReady = False
         logging.warning('----------------------------CLOSE WebSocket-----------------------')
@@ -87,6 +94,6 @@ class Ticker:
     def start(self):
         logging.info('poloniex tick start')
         self.ws = websocket.WebSocketApp('wss://api2.poloniex.com', on_open=self.on_open, on_message=self.on_message,
-                                         on_close=self.on_close)
+                                         on_close=self.on_close,on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()
