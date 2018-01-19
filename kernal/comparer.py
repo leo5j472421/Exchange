@@ -8,8 +8,11 @@ import logging, time
 class Comparer:
     def __init__(self, exchange1=Poloniex(), exchange2=Huobi(), currencypair=['BTC_USDT'], targe=['BTC_USDT']):
         logging.basicConfig(level=logging.INFO)
+
         self.exchange1 = exchange1
         self.exchange2 = exchange2
+        self.exchange1.__init__(currencypair,targe)
+        self.exchange2.__init__(currencypair,targe)
         self.exchange1.setTickerCompare(self.tickerCompare)
         self.exchange2.setTickerCompare(self.tickerCompare)
 

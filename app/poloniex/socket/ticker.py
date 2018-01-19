@@ -67,9 +67,9 @@ class Ticker:
             return
         if message[0] == 1002:
             if message[1] == 1:
-                self.isReady = True
                 logging.info('success subscript channel ' + str(message[0]))
                 return
+            self.isReady = True
             message[2][0] = reserve(Array.markets['byID'][str(message[2][0])]['currencyPair'])
             data = message[2]
             self.ticketEvent(data)

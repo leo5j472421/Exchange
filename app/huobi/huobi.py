@@ -7,6 +7,12 @@ class Huobi:
         self.trader = Trader(currencypair=currencypair)
         self.name = 'Huobi'
 
+
+    def __call__(self, currencypair, targe):
+        self.ticker.targe = targe
+        self.ticker.currencypair = currencypair
+        self.trader.currencypair = currencypair
+
     def start(self):
         self.ticker.start()
         self.trader.start()

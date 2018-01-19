@@ -12,7 +12,7 @@ class Trader:
         self.resetData(currencypair)
         self.isReady = False
         self.currencypair = currencypair
-        for a in currencypair:
+        for a in self.currencypair:
             self.data.update({a: Traders()})
     def resetData(self,currencypair):
         self.data = {}
