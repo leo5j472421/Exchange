@@ -1,4 +1,4 @@
-import time,json
+import time,json,logging
 
 
 def timestampToDate(timestamp, combine):
@@ -8,6 +8,14 @@ def timestampToDate(timestamp, combine):
     else:
         return {'date': time.strftime("%Y-%m-%d", time.gmtime(timestamp)),
                 'time': time.strftime("%H:%M:%S", time.gmtime(timestamp))}
+
+def callback( cb, *args):
+    if cb:
+        try:
+            cb(*args)
+        except Exception as e:
+            logging.error("error from callback {}: {}".format(cb, e))
+
 
 def subscript(ws, channal):
     text = {'command': 'subscribe', 'channel': channal}

@@ -4,8 +4,32 @@ from ..model.ticker import Ticker as t
 from ..function import *
 from ..bittrexApi import BittrexApi
 from threading import Thread
-import time, datetime
+import time
 
+'''
+{
+    'Deltas': [{
+        'OpenBuyOrders': 9252,
+        'Created': '2015-12-11T06:31:40.633',
+        'Volume': 7552.50518641,
+        'Ask': 10658.0,
+        'PrevDay': 10365.0,
+        'MarketName': 'USDT-BTC',
+        'Low': 9918.0,
+        'OpenSellOrders': 6247,
+        'TimeStamp': '2018-01-24T05:38:49.523',
+        'BaseVolume': 80351054.0714494,
+        'Bid': 10611.02000004,
+        'High': 11380.0,
+        'Last': 10658.0
+    },
+    '
+    '
+    '
+    ],
+    'Nounce': 261988
+}
+'''
 
 class Ticker:
     def __init__(self, notice=None, targe=['BTC_USDT']):
@@ -16,15 +40,7 @@ class Ticker:
         self.lastTime = time.time()
         self.api = BittrexApi()
 
-    def _callback(self, callback, *args):
-        if callback:
-            try:
-                callback(self, *args)
-            except Exception as e:
-                logging.error("error from callback {}: {}".format(callback, e))
-
     def on_open(self, ws):
-        self.isReady = True
         logging.info('init Bittrex\'s market Data')
         self.ws.subscribe('ticker')
         datas = self.api.get_market_summaries()
@@ -35,6 +51,9 @@ class Ticker:
                 pair = currencypair
                 ticker.formate(data, pair[0], pair[1])
                 self.data.update({currencypair: ticker})
+            if currencypair in self.targe:
+                callback(self.notice,currencypair)
+
     def on_error(self, ws, msg):
         self.isReady = False
         logging.error(msg)
@@ -47,7 +66,8 @@ class Ticker:
             ticker.formate(data, pair[0], pair[1])
             self.data.update({currencypair: ticker})
             if currencypair in self.targe:
-                self._callback(self.notice,currencypair)
+                callback(self.notice,currencypair)
+        self.isReady = True
 
     def on_close(self, ws):
         self.isReady = False

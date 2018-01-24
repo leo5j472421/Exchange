@@ -1,11 +1,33 @@
+from threading import Thread
+
+import websocket
+
+from ..function import *
 from ..model.trader import Trader as td
 from ..model.traders import Traders
-import websocket, logging
-from threading import Thread
-from ..function import *
+
+'''[{
+    'data': {
+        'asks': [
+            ['11719.5', '0.001'],
+            '
+            '
+            '
+        ],
+        'timestamp': 1516770794313,
+        'bids': [
+            ['10591.872', '0.79236926'],
+            '
+            '
+            '
+        ]
+    },
+    'binary': 0,
+    'channel': 'ok_sub_spot_BTC_USDT_depth'
+}]'''
 
 class Trader:
-    def __init__(self, currencypair=['BTC_USDT']):
+    def __init__(self, currencypair=['BTC_USDT'], targe=['BTC_USDT'], notice=None):
         self.p = True
         self.data = {}
         self.resetData(currencypair)
@@ -14,7 +36,10 @@ class Trader:
         for a in self.currencypair:
             self.data.update({a: Traders()})
         self.lastTime = time.time()
-    def resetData(self,currencypair):
+        self.targe = targe
+        self.notice = notice
+
+    def resetData(self, currencypair):
         self.data = {}
         for a in currencypair:
             self.data.update({a: Traders()})
@@ -22,9 +47,9 @@ class Trader:
     def on_open(self, ws):
         self.isReady = False
         for c in self.currencypair:
-            subscript(ws, c , 'trader' )
+            subscript(ws, c, 'trader')
 
-    def on_error(self,ws,message):
+    def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
         time.sleep(1)
@@ -32,21 +57,19 @@ class Trader:
         self.start()
 
     def on_message(self, ws, message):
-        message = json.loads(message)
         if type(message) is dict:
-            return #{"event":"pong"}
+            return  # {"event":"pong"}
         message = message[0]
-        if time.time() - self.lastTime > 30 :
+        if time.time() - self.lastTime > 30:
             ws.send('{"event":"ping"}')
             self.lastTime = time.time()
-        channel = message['channel'].replace('ok_sub_spot_','').replace('_depth','')
+        channel = message['channel'].replace('ok_sub_spot_', '').replace('_depth', '')
         if 'result' in message['data'].keys():
             if message['data']['result']:
                 logging.info('success subscript {} channel'.format(message['data']['channel']))
             else:
                 logging.error(message['data']['error_msg'])
         if channel in self.currencypair:
-            self.isReady = True
             for side in message['data']:
                 if side == 'asks':
                     for a in message['data']['asks']:
@@ -66,6 +89,9 @@ class Trader:
                         if not trade.amount == '0':
                             self.data[channel].bids.update({str(a[0]): trade})
                         self.data[channel].total[1] += trade.total
+                self.isReady = True
+                if channel in self.targe:
+                    callback(self.notice,channel)
 
     def on_close(self, ws):
         self.isReady = False
@@ -77,7 +103,8 @@ class Trader:
 
     def start(self):
         logging.info('OKEx trader start')
-        self.ws = websocket.WebSocketApp('wss://real.okex.com:10441/websocket', on_open=self.on_open, on_message=self.on_message,
-                                         on_close=self.on_close,on_error=self.on_error)
+        self.ws = websocket.WebSocketApp('wss://real.okex.com:10441/websocket', on_open=self.on_open,
+                                         on_message=self.on_message,
+                                         on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

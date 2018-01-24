@@ -7,9 +7,8 @@ class Poloniex:
 
     def __init__(self, currencypair=['BTC_USDT'], targe=['BTC_USDT']):
         self.ticker = Ticker(targe=targe)
-        self.trader = Trader(currencypair=currencypair)
+        self.trader = Trader(currencypair=currencypair,targe=targe)
         self.caller = PoloniexApi()
-        self.name = 'Poloniex'
 
     def __call__(self, currencypair, targe):
         self.ticker.targe = targe
@@ -18,6 +17,8 @@ class Poloniex:
     def start(self):
         self.ticker.start()
         self.trader.start()
+    def __str__(self):
+        return 'Poloniex'
 
     def setTickerCompare(self, function ):
         self.ticker.notice = function

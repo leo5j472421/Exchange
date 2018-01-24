@@ -1,34 +1,48 @@
-import websocket, traceback,sys
-from ..model.ticker import Ticker as t
+import logging
+from threading import Thread
+
+import websocket
+
 from ..arrary import Array
 from ..function import *
-from threading import Thread
+from ..model.ticker import Ticker as t
 from ..polonixeApi import PoloniexApi
-import logging
 
+'''
+Message format
+[
+    1002,                             Channel
+    null,                             Unknown
+    [
+        121,                          CurrencyPairID
+        "10777.56054438",             Last
+        "10800.00000000",             lowestAsk
+        "10789.20000001",             highestBid
+        "-0.00860373",                percentChange
+        "72542984.79776118",          baseVolume
+        "6792.60163706",              quoteVolume
+        0,                            isForzen
+        "11400.00000000",             high24hr
+        "9880.00000009"               low24hr
+    ]
+]
+'''
 
 class Ticker:
-    def __init__(self, notice=None,targe=['BTC_USDT']):
+    def __init__(self, notice=None, targe=['BTC_USDT']):
         self.data = {}
         self.isReady = False
         self.caller = PoloniexApi()
         self.notice = notice
         self.targe = targe
 
-    def _callback(self, callback, *args):
-        if callback:
-            try:
-                callback(self, *args)
-            except Exception as e:
-                logging.error("error from callback {}: {}".format(callback, e))
-
     def getTickerData(self):
-        data = self.caller.returnTicker()
+        data = self.caller.returnTicker()  # call PoloniexApi Reset The ticker Data
         for currencypair in data:
             tick = t()
             cp = currencypair.split('_')
             tick.formate(data[currencypair], cp[1], cp[0])
-            rcp = reserve(currencypair)#reverse
+            rcp = reserve(currencypair)  # reverse
             self.data.update({rcp: tick})
 
     def ticketEvent(self, args):
@@ -51,8 +65,9 @@ class Ticker:
         tk = t()
         tk.formate(newTickerData, base, quote)
         self.data.update({args[0]: tk})
-        if args[0] in self.targe :
-            self._callback(self.notice,args[0])
+        self.isReady = True
+        if args[0] in self.targe:
+            callback(self.notice, args[0])
 
     def on_open(self, ws):
         self.isReady = False
@@ -69,14 +84,13 @@ class Ticker:
             if message[1] == 1:
                 logging.info('success subscript channel ' + str(message[0]))
                 return
-            self.isReady = True
             message[2][0] = reserve(Array.markets['byID'][str(message[2][0])]['currencyPair'])
             data = message[2]
             self.ticketEvent(data)
-        elif message[0] == 1010:
+        elif message[0] == 1010:  # Poloniex's Websocket HeartBeat
             self.isReady = False
 
-    def on_error(self,ws,message):
+    def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
         time.sleep(1)
@@ -94,6 +108,6 @@ class Ticker:
     def start(self):
         logging.info('poloniex tick start')
         self.ws = websocket.WebSocketApp('wss://api2.poloniex.com', on_open=self.on_open, on_message=self.on_message,
-                                         on_close=self.on_close,on_error=self.on_error)
+                                         on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

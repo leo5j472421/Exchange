@@ -11,25 +11,42 @@ class Comparer:
 
         self.exchange1 = exchange1
         self.exchange2 = exchange2
-        self.exchange1.__init__(currencypair,targe)
-        self.exchange2.__init__(currencypair,targe)
-        self.exchange1.setTickerCompare(self.tickerCompare)
-        self.exchange2.setTickerCompare(self.tickerCompare)
+        self.exchange1.__init__(currencypair, targe)
+        self.exchange2.__init__(currencypair, targe)
+        #self.exchange1.setTickerCompare(self.tickerCompare)
+        #self.exchange2.setTickerCompare(self.tickerCompare)
+        self.exchange1.setTraderCompare(self.tradercompare)
+        self.exchange2.setTraderCompare(self.tradercompare)
 
     def setTarge(self, array):
         self.exchange1.ticker.targe = array
         self.exchange2.ticker.targe = array
 
-    def tickerCompare(self, ticker, currencyPair):
+    def tickerCompare(self, currencyPair):
         if not self.exchange1.ticker.isReady:
-            logging.warning(self.exchange1.name + '\'s ticker is not Ready ')
+            logging.warning('{}\'s ticker is not Ready '.format(self.exchange1))
         elif not self.exchange2.ticker.isReady:
-            logging.warning(self.exchange2.name + '\'s ticker is not Ready ')
+            logging.warning('{}\'s ticker is not Ready '.format(self.exchange2))
         else:
-            print(currencyPair + ': ' + self.exchange1.name + ' : ' + str(
-                self.exchange1.ticker.data[currencyPair].price) + ' ' +
-                self.exchange2.name + ' : ' + str(
-                self.exchange2.ticker.data[currencyPair].price) + ' time : ' + timestampToDate(time.time(), True))
+            nowtime = timestampToDate(time.time())
+            print("{}'Price : {} : {} , {} : {} time : {} ".format(currencyPair, self.exchange1, str(
+                self.exchange1.ticker.data[currencyPair].price), self.exchange2,
+                                                                   str(self.exchange2.ticker.data[currencyPair].price),
+                                                                   nowtime))
+
+    def tradercompare(self, currencyPair):
+        if not self.exchange1.trader.isReady:
+            logging.warning('{}\'s trader is not Ready '.format(self.exchange1))
+        elif not self.exchange2.trader.isReady:
+            logging.warning('{}\'s trader is not Ready '.format(self.exchange2))
+        else:
+            askslow1 = min(list(map(float, self.exchange1.trader.data[currencyPair].asks.keys())))
+            bidshigh1 = max(list(map(float, self.exchange1.trader.data[currencyPair].bids.keys())))
+            askslow2 = min(list(map(float, self.exchange2.trader.data[currencyPair].asks.keys())))  #Huobi trader reset problem
+            bidshigh2 = max(list(map(float, self.exchange2.trader.data[currencyPair].bids.keys())))
+            nowtime = timestampToDate(time.time())
+            print("{}: {}'s Asks low : {}  Bids High : {} , {}'s Asks low : {}  Bids High : {} time : {} ".format(
+                currencyPair, self.exchange1, askslow1, bidshigh1, self.exchange2, askslow2, bidshigh2, nowtime))
 
     def start(self):
         logging.info('compare start')

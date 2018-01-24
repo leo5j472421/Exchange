@@ -1,4 +1,5 @@
 import time,datetime
+from ..function import *
 '''
 {
     'BaseVolume': 100.15802301,
@@ -34,5 +35,8 @@ class Ticker:
             dt = datetime.datetime.strptime(data['TimeStamp'], '%Y-%m-%dT%H:%M:%S.%f')
         except:
             dt = datetime.datetime.strptime(data['TimeStamp'], '%Y-%m-%dT%H:%M:%S')
-        ts = dt.timestamp() + 8 * 3600  # time zone problem
+        if time.daylight:
+            ts = dt.timestamp() - time.altzone   # time zone problem
+        else:
+            ts = dt.timestamp() - time.timezone  # time zone problem
         self.timestramp = ts

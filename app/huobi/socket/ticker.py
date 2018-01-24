@@ -5,7 +5,25 @@ from threading import Thread
 from ..HuobiServices import *
 import logging
 
+'''
+{
+    'ts': 1516771146653,                  Timestamp
+    'ch': 'market.btcusdt.detail',        Channel
+    'tick': {                             TickerData
+        'low': 10000.0,
+        'id': 1523472994,
+        'count': 162822,
+        'amount': 10988.277588332003,
+        'vol': 116416741.8753981,
+        'high': 11350.0,
+        'version': 1523472994,
+        'open': 10384.12,                 開盤價
+        'close': 10532.0                  收盤價
+    }
+}
+'''
 class Ticker:
+
     def __init__(self, notice=None,currencypair=['BTC_USDT','ETH_USDT'],targe=['BTC_USDT']):
         self.data = {}
         self.isReady = False
@@ -15,47 +33,28 @@ class Ticker:
         self.notice = notice
         self.targe = targe
 
-    def _callback(self, callback, *args):
-        if callback:
-            try:
-                callback(self, *args)
-            except Exception as e:
-                logging.error("error from callback {}: {}".format(callback, e))
 
-    def getAllTickerData(self):
-        self.currencypair = get_symbolArray()
-
-        """
-        print(symbols)
-        for symbol in symbols:
-            pair = symbols[symbol].split('_')
-            data = get_ticker(symbol)['tick']
-            tick = t()
-            tick.formate(data, pair[0], pair[1])
-            self.data.update({symbols[symbol]: tick})
-        print(self.data['BTC_USDT'].price)
-        """
     def on_open(self, ws):
-        #self.getAllTickerData()
+        #self.currencypair = get_symbolArray()
         self.isReady = False
         for cp in self.currencypair:
             subscript(ws,cp)
         # self.getTickerData()
-        logging.info('init huobi\'s market Data')
+        # logging.info('init huobi\'s market Data')
 
     def on_message(self, ws, message):
         message = json.loads(gzip.decompress(message).decode('utf-8'))
-        if 'tick' in message :
+        if 'tick' in message:
             channel = message['ch'][message['ch'].find('.')+1:][0:message['ch'].find('.')+1]
             if channel in self.currencypair:
-                self.isReady = True
                 pair = self.currencypair[channel].split('_')
                 data = message['tick']
                 tick = t()
                 tick.formate(data, pair[0], pair[1])
                 self.data.update({self.currencypair[channel]:tick})
+                self.isReady = True
                 if self.currencypair[channel] in self.targe :
-                    self._callback(self.notice,self.currencypair[channel])
+                    callback(self.notice,self.currencypair[channel])
         elif 'status' in message:
             if message['status'] == 'ok':
                 logging.info('subscript {} channel success'.format(message['subbed']))

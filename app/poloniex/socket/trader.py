@@ -1,14 +1,26 @@
+from threading import Thread
+
+import websocket
+
+from ..arrary import Array
+from ..function import *
 from ..model.trader import Trader as td
 from ..model.traders import Traders
-import websocket
-from threading import Thread
-from ..function import *
-from ..arrary import Array
-import logging
+
+'''
+[
+    121,                                                                    CurrencyPairID
+    191049657,                                                              Sequence
+    [ 
+        ["o", 0, "10800.00000000", "0.06347929"],                          o: OrderModify, Sides(asks,bids) , Rate , Amount
+        ["t", "18448534", 1, "10800.00000000", "0.00082497", 1516766511]   t: NewTrade , TradeID? side(sell,buy) , Rate , Amount , Timestramp
+    ]
+]
+'''
 
 
 class Trader:
-    def __init__(self, currencypair=['BTC_USDT', 'ETH_USDT', 'ETH_BTC', 'ZEC_BTC'], notice=None):
+    def __init__(self, currencypair=['BTC_USDT', 'ETH_USDT', 'ETH_BTC', 'ZEC_BTC'], targe=['BTC_USDT'], notice=None):
         self.p = True
         self.data = {}
         self.isReady = False
@@ -16,6 +28,7 @@ class Trader:
         for a in currencypair:
             self.data.update({a: Traders()})
         self.marketChannel = []
+        self.targe = targe
         self.notice = notice
 
     def updateTotal(self, side, rate, total, amount, cp):
@@ -73,6 +86,9 @@ class Trader:
                     self.modifyTrade(order, side, cp)
                 else:
                     self.removeTrade(order['rate'], side, cp)
+        self.isReady = True
+        if cp in self.targe:
+            callback(self.notice, cp)
 
     def on_open(self, ws):
         self.isReady = False
@@ -112,10 +128,10 @@ class Trader:
                                  }
                     })
             self.traderEvent(args, cp)
-        elif message[0] < 1000:
+        elif message[0] < 1000:  # First msg ( all order book data )
             cp = reserve(Array.markets['byID'][str(message[0])]['currencyPair'])
             if message[2][0][0] == 'i':
-                logging.info('success subscript channel ' + reserve(cp) )
+                logging.info('success subscript channel ' + reserve(cp))
                 self.marketChannel.append(message[0])
                 data = message[2][0][1]['orderBook']
                 logging.info('Init ' + cp + '\'s Order Book Data: ' + str(len(data[0]) + len(data[1])))
@@ -123,20 +139,24 @@ class Trader:
                     side = 'asks' if a == 0 else 'bids'
                     for i in data[a]:
                         self.initOrder(i, data[a][i], side, cp)
-    def on_error(self,ws,message):
+                self.isReady = True
+                if cp in self.targe:
+                    callback(self.notice, cp)
+
+    def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
         time.sleep(1)
         logging.info('Restart The Socket')
-        self.start()
+        # self.start()
 
-    def on_close(self, ws ):
+    def on_close(self, ws):
         self.isReady = False
         logging.warning('----------------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
         logging.info('Restart The Socket')
-        self.start()
+        # self.start()
 
     def start(self):
         logging.info('poloniex trader start')

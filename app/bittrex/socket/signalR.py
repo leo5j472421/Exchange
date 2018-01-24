@@ -1,8 +1,13 @@
-import threading
-import time
 import logging
+import time
+
 import cfscrape
 from signalr import Connection
+
+'''
+Websocket like SignalR
+base on WebsocketApp
+'''
 
 
 class SignalR(object):
@@ -19,12 +24,9 @@ class SignalR(object):
         self.keep_running = False
         self.conn = None
         self.corehub = None
-        self.last_ping_tm = 0
-        self.last_pong_tm = 0
         self.cps = []
 
     def r(self, **kwargs):
-
         msg = kwargs
         if 'R' in msg and type(msg['R']) is not bool:
             if 'MarketName' in msg['R'] and msg['R']['MarketName'] is None:
@@ -44,7 +46,7 @@ class SignalR(object):
         elif channel == 'trader':
             self.corehub.server.invoke('SubscribeToExchangeDeltas', cp)
             self.corehub.server.invoke('queryExchangeState', cp)
-            logging.info('Subscribe Bittrex\'s updateExchangeState')
+            logging.info('Subscribe Bittrex\'s {} updateExchangeState '.format(cp))
 
     def close(self):
         self.keep_running = False
@@ -66,7 +68,7 @@ class SignalR(object):
             logging.info('Trying to establish connection to Bittrex through https://socket-stage.bittrex.com/signalr')
             with cfscrape.create_scraper() as connection:
                 self.conn = Connection(None, connection)
-            self.conn.received += self.r
+            self.conn.received += self.r  #
             self.conn.url = 'https://socket-stage.bittrex.com/signalr'
             self.corehub = self.conn.register_hub('coreHub')
             self.conn.start()
@@ -76,26 +78,16 @@ class SignalR(object):
 
             self.corehub.client.on('updateSummaryState', self.received)
             self.corehub.client.on('updateExchangeState', self.received)
-            if ping_interval:
-                event = threading.Event()
-                thread = threading.Thread(
-                    target=self._send_ping, args=(ping_interval, event))
-                thread.setDaemon(True)
-                thread.start()
+
             while self.conn.started:
                 if not self.keep_running:
                     break
-                self.conn.wait(1)
-                if ping_timeout and self.last_ping_tm \
-                        and time.time() - self.last_ping_tm > ping_timeout \
-                        and self.last_ping_tm - self.last_pong_tm > ping_timeout:
-                    raise Exception("ping/pong timed out")
+                self.conn.wait(1)                   #Data will receive when connection is waiting
 
         except (Exception, KeyboardInterrupt, SystemExit) as e:
             self._callback(self.on_error, e)
         finally:
             if thread and thread.isAlive():
-                event.set()
                 thread.join()
             self.keep_running = False
             self._callback(self.on_close)

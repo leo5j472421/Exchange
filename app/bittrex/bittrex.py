@@ -3,8 +3,10 @@ from .socket.trader import Trader
 class Bittrex:
     def __init__(self,currencypair=['ETH_USDT','BTC_USDT','ETH_BTC'],targe=['ETH_USDT']):
         self.ticker = Ticker(targe=targe)
-        self.trader = Trader(currencypair=currencypair)
-        self.name = 'Bittrex'
+        self.trader = Trader(currencypair=currencypair,targe=targe)
+
+    def __str__(self):
+        return 'Bittrex'
 
     def __call__(self, currencypair, targe):
         self.ticker.targe = targe

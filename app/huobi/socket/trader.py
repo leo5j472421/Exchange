@@ -5,16 +5,40 @@ from threading import Thread
 from ..function import *
 import logging
 
+'''
+{                                              Huobi's OrderBook data will reset evey time when receive the new data from server
+    'ch': 'market.btcusdt.depth.step0',        Channel
+    'tick': {                                  
+        'ts': 1516771568089,                   Timestamp
+        'asks': [
+            [10635.73, 0.2264],                Rate , Amount
+            '
+            '
+            '
+        ],
+        'bids': [
+            [10604.13, 0.224],
+            '
+            '
+            '
+        ],
+        'version': 1523609243
+    },
+    'ts': 1516771568471
+}
+'''
+
 
 class Trader:
-    def __init__(self, currencypair=['BTC_USDT']):
-        self.p = True
+    def __init__(self, currencypair=['BTC_USDT'],targe=['BTC_USDT'],notice = None):
         self.data = {}
         self.resetData(currencypair)
         self.isReady = False
         self.currencypair = {}
         for a in currencypair:
             self.currencypair.update({a.replace('_', '').lower(): a})
+        self.targe = targe
+        self.notice = notice
 
     def resetData(self, currencypair):
         self.data = {}
@@ -29,9 +53,9 @@ class Trader:
     def on_message(self, ws, message):
         message = json.loads(gzip.decompress(message).decode('utf-8'))
         if 'tick' in message:
+            self.isReady = False
             channel = message['ch'][message['ch'].find('.') + 1:][0:message['ch'].find('.') + 1]
             if channel in self.currencypair:
-                self.isReady = True
                 self.resetData(self.currencypair.values())
                 data = message['tick']
                 for side in data:
@@ -45,6 +69,9 @@ class Trader:
                             trade = td(a[0], a[1])
                             self.data[self.currencypair[channel]].bids.update({str(a[0]): trade})
                             self.data[self.currencypair[channel]].total[1] += trade.total
+                self.isReady = True
+                if self.currencypair[channel] in self.targe:
+                    callback(self.notice,self.currencypair[channel])
         elif 'status' in message:
             if message['status'] == 'ok':
                 logging.info('subscript {} channel success'.format(message['subbed']))

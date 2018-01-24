@@ -3,8 +3,10 @@ from .socket.trader import Trader
 class Okex:
     def __init__(self,currencypair=['BTC_USDT'],targe=['BTC_USDT']):
         self.ticker = Ticker(currencypair=currencypair,targe=targe)
-        self.trader = Trader(currencypair=currencypair)
-        self.name = 'OKEX'
+        self.trader = Trader(currencypair=currencypair,targe=targe)
+
+    def __str__(self):
+        return 'OkEx'
 
     def __call__(self, currencypair, targe):
         self.ticker.targe = targe
