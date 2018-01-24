@@ -32,18 +32,18 @@ import logging
 class Trader:
     def __init__(self, currencypair=['BTC_USDT'],targe=['BTC_USDT'],notice = None):
         self.data = {}
-        self.resetData(currencypair)
         self.isReady = False
         self.currencypair = {}
         for a in currencypair:
             self.currencypair.update({a.replace('_', '').lower(): a})
+        for cp in currencypair:
+            self.resetData(cp)
         self.targe = targe
         self.notice = notice
+        self.i = 0
 
-    def resetData(self, currencypair):
-        self.data = {}
-        for a in currencypair:
-            self.data.update({a: Traders()})
+    def resetData(self, cp):
+        self.data.update({cp: Traders()})
 
     def on_open(self, ws):
         self.isReady = False
@@ -51,12 +51,14 @@ class Trader:
             subscript(ws, c, 'trader')
 
     def on_message(self, ws, message):
+        if self.i == 10:
+            return
         message = json.loads(gzip.decompress(message).decode('utf-8'))
         if 'tick' in message:
             self.isReady = False
             channel = message['ch'][message['ch'].find('.') + 1:][0:message['ch'].find('.') + 1]
             if channel in self.currencypair:
-                self.resetData(self.currencypair.values())
+                self.resetData(self.currencypair[channel])
                 data = message['tick']
                 for side in data:
                     if side == 'asks':
@@ -90,7 +92,7 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('----------------------------CLOSE WebSocket-----------------------')
+        logging.warning('Huobi Trader----------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
         logging.info('Restart The Socket')

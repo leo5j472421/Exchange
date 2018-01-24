@@ -3,26 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="1bd60471-e932-4ec9-ad0a-194f19ccc0ac" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/app/bittrex/bittrex.py" afterPath="$PROJECT_DIR$/app/bittrex/bittrex.py" />
-      <change beforePath="$PROJECT_DIR$/app/bittrex/function.py" afterPath="$PROJECT_DIR$/app/bittrex/function.py" />
       <change beforePath="$PROJECT_DIR$/app/bittrex/model/ticker.py" afterPath="$PROJECT_DIR$/app/bittrex/model/ticker.py" />
-      <change beforePath="$PROJECT_DIR$/app/bittrex/socket/signalR.py" afterPath="$PROJECT_DIR$/app/bittrex/socket/signalR.py" />
       <change beforePath="$PROJECT_DIR$/app/bittrex/socket/ticker.py" afterPath="$PROJECT_DIR$/app/bittrex/socket/ticker.py" />
-      <change beforePath="$PROJECT_DIR$/app/bittrex/socket/trader.py" afterPath="$PROJECT_DIR$/app/bittrex/socket/trader.py" />
-      <change beforePath="$PROJECT_DIR$/app/huobi/function.py" afterPath="$PROJECT_DIR$/app/huobi/function.py" />
-      <change beforePath="$PROJECT_DIR$/app/huobi/huobi.py" afterPath="$PROJECT_DIR$/app/huobi/huobi.py" />
-      <change beforePath="$PROJECT_DIR$/app/huobi/socket/ticker.py" afterPath="$PROJECT_DIR$/app/huobi/socket/ticker.py" />
       <change beforePath="$PROJECT_DIR$/app/huobi/socket/trader.py" afterPath="$PROJECT_DIR$/app/huobi/socket/trader.py" />
-      <change beforePath="$PROJECT_DIR$/app/okex/function.py" afterPath="$PROJECT_DIR$/app/okex/function.py" />
-      <change beforePath="$PROJECT_DIR$/app/okex/okex.py" afterPath="$PROJECT_DIR$/app/okex/okex.py" />
-      <change beforePath="$PROJECT_DIR$/app/okex/socket/ticker.py" afterPath="$PROJECT_DIR$/app/okex/socket/ticker.py" />
-      <change beforePath="$PROJECT_DIR$/app/okex/socket/trader.py" afterPath="$PROJECT_DIR$/app/okex/socket/trader.py" />
-      <change beforePath="$PROJECT_DIR$/app/poloniex/function.py" afterPath="$PROJECT_DIR$/app/poloniex/function.py" />
-      <change beforePath="$PROJECT_DIR$/app/poloniex/model/ticker.py" afterPath="$PROJECT_DIR$/app/poloniex/model/ticker.py" />
-      <change beforePath="$PROJECT_DIR$/app/poloniex/poloniex.py" afterPath="$PROJECT_DIR$/app/poloniex/poloniex.py" />
-      <change beforePath="$PROJECT_DIR$/app/poloniex/socket/ticker.py" afterPath="$PROJECT_DIR$/app/poloniex/socket/ticker.py" />
-      <change beforePath="$PROJECT_DIR$/app/poloniex/socket/trader.py" afterPath="$PROJECT_DIR$/app/poloniex/socket/trader.py" />
-      <change beforePath="$PROJECT_DIR$/kernal/comparer.py" afterPath="$PROJECT_DIR$/kernal/comparer.py" />
       <change beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -40,8 +23,8 @@
             <file leaf-file-name="ticker.py" pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/app/bittrex/socket/ticker.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="326">
-                    <caret line="60" column="38" lean-forward="false" selection-start-line="60" selection-start-column="38" selection-end-line="60" selection-end-column="38" />
+                  <state relative-caret-position="1124">
+                    <caret line="60" column="43" lean-forward="false" selection-start-line="60" selection-start-column="43" selection-end-line="60" selection-end-column="43" />
                     <folding>
                       <element signature="e#0#14#0" expanded="true" />
                     </folding>
@@ -52,7 +35,7 @@
             <file leaf-file-name="trader.py" pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/app/bittrex/socket/trader.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="-434">
+                  <state relative-caret-position="1846">
                     <caret line="98" column="69" lean-forward="true" selection-start-line="98" selection-start-column="69" selection-end-line="98" selection-end-column="69" />
                     <folding>
                       <element signature="e#0#39#0" expanded="true" />
@@ -71,11 +54,11 @@
                 </provider>
               </entry>
             </file>
-            <file leaf-file-name="trader.py" pinned="false" current-in-tab="true">
+            <file leaf-file-name="trader.py" pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/app/huobi/socket/trader.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="-1023">
-                    <caret line="8" column="127" lean-forward="true" selection-start-line="8" selection-start-column="127" selection-end-line="8" selection-end-column="127" />
+                  <state relative-caret-position="484">
+                    <caret line="59" column="44" lean-forward="false" selection-start-line="59" selection-start-column="44" selection-end-line="59" selection-end-column="44" />
                     <folding>
                       <element signature="e#0#39#0" expanded="true" />
                     </folding>
@@ -107,7 +90,7 @@
                 </provider>
               </entry>
             </file>
-            <file leaf-file-name="ticker.py" pinned="false" current-in-tab="false">
+            <file leaf-file-name="ticker.py" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/app/poloniex/socket/ticker.py">
                 <provider selected="true" editor-type-id="text-editor">
                   <state relative-caret-position="475">
@@ -148,6 +131,30 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="comparer.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kernal/comparer.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="299">
+              <caret line="44" column="62" lean-forward="false" selection-start-line="44" selection-start-column="62" selection-end-line="44" selection-end-column="62" />
+              <folding>
+                <element signature="e#0#42#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="huobi.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/huobi/huobi.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="311">
+              <caret line="17" column="8" lean-forward="false" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
+              <folding>
+                <element signature="e#0#33#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="ticker.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/poloniex/model/ticker.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -178,11 +185,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="114">
-              <caret line="6" column="104" lean-forward="false" selection-start-line="6" selection-start-column="104" selection-end-line="6" selection-end-column="104" />
+            <state relative-caret-position="171">
+              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -193,8 +200,8 @@
       <file leaf-file-name="signalR.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/bittrex/socket/signalR.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="185">
-              <caret line="78" column="71" lean-forward="true" selection-start-line="78" selection-start-column="71" selection-end-line="78" selection-end-column="71" />
+            <state relative-caret-position="361">
+              <caret line="52" column="21" lean-forward="true" selection-start-line="52" selection-start-column="21" selection-end-line="52" selection-end-column="21" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -205,8 +212,8 @@
       <file leaf-file-name="bittrex.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/bittrex/bittrex.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="5" column="66" lean-forward="false" selection-start-line="5" selection-start-column="66" selection-end-line="5" selection-end-column="66" />
+            <state relative-caret-position="76">
+              <caret line="4" column="41" lean-forward="true" selection-start-line="4" selection-start-column="41" selection-end-line="4" selection-end-column="41" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -214,36 +221,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ticker.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ticker.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/bittrex/model/ticker.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="41" column="28" lean-forward="false" selection-start-line="41" selection-start-column="28" selection-end-line="41" selection-end-column="28" />
-              <folding>
-                <element signature="e#0#20#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="trader.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/bittrex/model/trader.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+            <state relative-caret-position="-342">
+              <caret line="0" column="7" lean-forward="false" selection-start-line="0" selection-start-column="7" selection-end-line="0" selection-end-column="7" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bittrexApi.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/bittrex/bittrexApi.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4">
-              <caret line="265" column="17" lean-forward="false" selection-start-line="265" selection-start-column="12" selection-end-line="265" selection-end-column="17" />
-              <folding>
-                <element signature="e#45#56#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -259,9 +242,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>SNAPSHOT</find>
-      <find>control_queue</find>
-      <find>_get_snapshot</find>
       <find>_start_socket_control_queue</find>
       <find>_start_main_thread</find>
       <find>R</find>
@@ -289,6 +269,9 @@
       <find>order</find>
       <find>_send_ping</find>
       <find>logging</find>
+      <find>data</find>
+      <find>self.data</find>
+      <find>BTC_USDT</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -333,28 +316,29 @@
         <option value="$PROJECT_DIR$/app/bittrex/function.py" />
         <option value="$PROJECT_DIR$/app/okex/function.py" />
         <option value="$PROJECT_DIR$/app/poloniex/function.py" />
-        <option value="$PROJECT_DIR$/app/huobi/huobi.py" />
         <option value="$PROJECT_DIR$/app/okex/okex.py" />
-        <option value="$PROJECT_DIR$/kernal/comparer.py" />
         <option value="$PROJECT_DIR$/app/poloniex/model/ticker.py" />
         <option value="$PROJECT_DIR$/app/poloniex/socket/ticker.py" />
         <option value="$PROJECT_DIR$/app/poloniex/socket/trader.py" />
         <option value="$PROJECT_DIR$/app/okex/socket/ticker.py" />
         <option value="$PROJECT_DIR$/app/okex/socket/trader.py" />
         <option value="$PROJECT_DIR$/app/huobi/socket/ticker.py" />
-        <option value="$PROJECT_DIR$/app/bittrex/model/ticker.py" />
         <option value="$PROJECT_DIR$/app/bittrex/socket/trader.py" />
         <option value="$PROJECT_DIR$/app/bittrex/socket/signalR.py" />
         <option value="$PROJECT_DIR$/app/bittrex/socket/ticker.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/kernal/comparer.py" />
+        <option value="$PROJECT_DIR$/app/huobi/huobi.py" />
         <option value="$PROJECT_DIR$/app/huobi/socket/trader.py" />
+        <option value="$PROJECT_DIR$/app/bittrex/model/ticker.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="-7" />
-    <option name="width" value="974" />
-    <option name="height" value="1047" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="497" />
+    <option name="y" value="-9" />
+    <option name="width" value="771" />
+    <option name="height" value="945" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -603,8 +587,8 @@
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.main" />
-        <item index="1" class="java.lang.String" itemvalue="Python.order_book" />
-        <item index="2" class="java.lang.String" itemvalue="Python.signalR" />
+        <item index="1" class="java.lang.String" itemvalue="Python.signalR" />
+        <item index="2" class="java.lang.String" itemvalue="Python.order_book" />
         <item index="3" class="java.lang.String" itemvalue="Python.test" />
         <item index="4" class="java.lang.String" itemvalue="Python.ticker_updates" />
       </list>
@@ -627,13 +611,12 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="974" height="1047" extended-state="0" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30555555" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30505794" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34175825" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33841133" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297062" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297062" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973656" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -879,16 +862,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/huobi/huobi.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="1" column="33" lean-forward="false" selection-start-line="1" selection-start-column="33" selection-end-line="1" selection-end-column="33" />
-          <folding>
-            <element signature="e#0#33#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/poloniex/function.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -913,31 +886,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernal/comparer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="41" column="13" lean-forward="true" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#42#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/poloniex/poloniex.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
           <caret line="7" column="67" lean-forward="true" selection-start-line="7" selection-start-column="67" selection-end-line="7" selection-end-column="67" />
           <folding>
-            <element signature="e#0#36#0" expanded="true" />
+            <element signature="e#0#36#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/poloniex/arrary.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5484">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -948,44 +903,6 @@
           <folding>
             <element signature="e#0#28#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/poloniex/socket/ticker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="25" column="45" lean-forward="false" selection-start-line="25" selection-start-column="45" selection-end-line="25" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/okex/socket/trader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1102">
-          <caret line="58" column="38" lean-forward="false" selection-start-line="58" selection-start-column="38" selection-end-line="58" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/okex/socket/ticker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="950">
-          <caret line="50" column="37" lean-forward="false" selection-start-line="50" selection-start-column="37" selection-end-line="50" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/huobi/socket/ticker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="46" column="28" lean-forward="false" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1013,42 +930,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/bittrex/model/ticker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="41" column="28" lean-forward="false" selection-start-line="41" selection-start-column="28" selection-end-line="41" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/bittrex/bittrexApi.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4">
           <caret line="265" column="17" lean-forward="false" selection-start-line="265" selection-start-column="12" selection-end-line="265" selection-end-column="17" />
           <folding>
             <element signature="e#45#56#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/bittrex/socket/trader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-434">
-          <caret line="98" column="69" lean-forward="true" selection-start-line="98" selection-start-column="69" selection-end-line="98" selection-end-column="69" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/bittrex/bittrex.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="66" lean-forward="false" selection-start-line="5" selection-start-column="66" selection-end-line="5" selection-end-column="66" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1061,6 +948,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/poloniex/arrary.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5484">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/bittrex/bittrex.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="41" lean-forward="true" selection-start-line="4" selection-start-column="41" selection-end-line="4" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/poloniex/model/ticker.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="19">
@@ -1069,20 +974,108 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/bittrex/socket/signalR.py">
+    <entry file="file://$PROJECT_DIR$/app/bittrex/socket/ticker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="78" column="71" lean-forward="true" selection-start-line="78" selection-start-column="71" selection-end-line="78" selection-end-column="71" />
+        <state relative-caret-position="1124">
+          <caret line="60" column="43" lean-forward="false" selection-start-line="60" selection-start-column="43" selection-end-line="60" selection-end-column="43" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/bittrex/socket/ticker.py">
+    <entry file="file://$PROJECT_DIR$/app/bittrex/socket/signalR.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="326">
-          <caret line="60" column="38" lean-forward="false" selection-start-line="60" selection-start-column="38" selection-end-line="60" selection-end-column="38" />
+        <state relative-caret-position="361">
+          <caret line="52" column="21" lean-forward="true" selection-start-line="52" selection-start-column="21" selection-end-line="52" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernal/comparer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="44" column="62" lean-forward="false" selection-start-line="44" selection-start-column="62" selection-end-line="44" selection-end-column="62" />
+          <folding>
+            <element signature="e#0#42#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/huobi/huobi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="17" column="8" lean-forward="false" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/huobi/socket/trader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="484">
+          <caret line="59" column="44" lean-forward="false" selection-start-line="59" selection-start-column="44" selection-end-line="59" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/bittrex/socket/trader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1846">
+          <caret line="98" column="69" lean-forward="true" selection-start-line="98" selection-start-column="69" selection-end-line="98" selection-end-column="69" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/huobi/socket/ticker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="46" column="28" lean-forward="false" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/okex/socket/trader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1102">
+          <caret line="58" column="38" lean-forward="false" selection-start-line="58" selection-start-column="38" selection-end-line="58" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/okex/socket/ticker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="950">
+          <caret line="50" column="37" lean-forward="false" selection-start-line="50" selection-start-column="37" selection-end-line="50" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/poloniex/socket/ticker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="25" column="45" lean-forward="false" selection-start-line="25" selection-start-column="45" selection-end-line="25" selection-end-column="45" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
@@ -1097,23 +1090,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/huobi/socket/trader.py">
+    <entry file="file://$PROJECT_DIR$/app/bittrex/model/ticker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1023">
-          <caret line="8" column="127" lean-forward="true" selection-start-line="8" selection-start-column="127" selection-end-line="8" selection-end-column="127" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="6" column="104" lean-forward="false" selection-start-line="6" selection-start-column="104" selection-end-line="6" selection-end-column="104" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-342">
+          <caret line="0" column="7" lean-forward="false" selection-start-line="0" selection-start-column="7" selection-end-line="0" selection-end-column="7" />
+          <folding />
         </state>
       </provider>
     </entry>

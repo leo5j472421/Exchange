@@ -58,7 +58,7 @@ class Ticker:
         self.isReady = False
         logging.error(msg)
 
-    def on_message(self, ws, message):
+    def on_message(self, ws, message):   # receive Data every 5 second
         for data in message['Deltas']:
             ticker = t()
             currencypair = reserve(data['MarketName'])
