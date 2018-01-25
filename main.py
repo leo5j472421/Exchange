@@ -4,11 +4,13 @@ from app.ok.okex import Okex
 from app.poloniex.poloniex import Poloniex
 from app.huobi.huobi import Huobi
 from app.ok.okcoin import Okcoin
+from app.bitfinex.bitfinex import Bitfinex
+import logging
+comparer = Comparer(exchange1=Bitfinex(), currencypair=['BTC_USDT','ETH_USDT','ETH_BTC'],targe=['BTC_USDT','ETH_USDT'])
+comparer.start()
 
-#comparer = Comparer(exchange1=Okcoin(),exchange2=Okex(), currencypair=['BTC_USDT','ETH_USDT','ETH_BTC'],targe=['BTC_USDT'])
-#comparer.start()
+#logging.basicConfig(level=logging.INFO)
 
-
-o = Bittrex()
-o.trader.start()
+#o = Bitfinex()
+#o.trader.start()
 
