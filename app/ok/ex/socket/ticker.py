@@ -1,7 +1,9 @@
-import websocket, logging
-from ..model.ticker import Ticker as t
-from ..function import *
 from threading import Thread
+
+import websocket
+
+from app.ok.function import *
+from ..model.ticker import Ticker as t
 
 '''
 [{
@@ -24,6 +26,7 @@ from threading import Thread
 }]
 '''
 
+
 class Ticker:
     def __init__(self, notice=None, currencypair=['BTC_USDT', 'ETH_USDT'], targe=['BTC_USDT']):
         self.data = {}
@@ -32,19 +35,19 @@ class Ticker:
         self.notice = notice
         self.targe = targe
         self.lastTime = time.time()
+        self.name = 'OKEx'
 
     def on_open(self, ws):
         self.lastTime = time.time()
         self.isReady = False
         for cp in self.currencypair:
             subscript(ws, cp)
-        # logging.info('init OKEx\'s market Data')
 
     def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart {} Ticker Socket'.format(self.name))
         self.start()
 
     def on_message(self, ws, message):
@@ -56,9 +59,11 @@ class Ticker:
             self.lastTime = time.time()
         message = message[0]
         channel = message['channel'].replace('ok_sub_spot_', '').replace('_ticker', '')
+        if self.name is 'OKCoin':
+            channel = channel.replace('USD','USDT')
         if 'result' in message['data'].keys():
             if message['data']['result']:
-                logging.info('success subscript {} channel'.format(message['data']['channel']))
+                logging.info('success subscript {}\' {} channel'.format(self.name,message['data']['channel']))
             else:
                 logging.error(message['data']['error_msg'])
         elif channel in self.currencypair:
@@ -72,10 +77,10 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('----------------------------CLOSE WebSocket-----------------------')
+        logging.warning('{} Ticker----------------------------CLOSE WebSocket-----------------------'.format(self.name))
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart {} Ticker Socket'.format(self.name))
         self.start()
 
     def start(self):

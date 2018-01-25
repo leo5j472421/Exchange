@@ -1,5 +1,5 @@
-from .socket.ticker import Ticker
-from .socket.trader import Trader
+from app.ok.ex.socket.ticker import Ticker
+from app.ok.ex.socket.trader import Trader
 class Okex:
     def __init__(self,currencypair=['BTC_USDT'],targe=['BTC_USDT']):
         self.ticker = Ticker(currencypair=currencypair,targe=targe)

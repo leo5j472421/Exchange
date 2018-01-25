@@ -1,4 +1,3 @@
-import logging
 from threading import Thread
 
 import websocket
@@ -27,6 +26,7 @@ Message format
     ]
 ]
 '''
+
 
 class Ticker:
     def __init__(self, notice=None, targe=['BTC_USDT']):
@@ -82,7 +82,7 @@ class Ticker:
             return
         if message[0] == 1002:
             if message[1] == 1:
-                logging.info('success subscript channel ' + str(message[0]))
+                logging.info('success subscript channel '.format(str(message[0])))
                 return
             message[2][0] = reserve(Array.markets['byID'][str(message[2][0])]['currencyPair'])
             data = message[2]
@@ -94,15 +94,15 @@ class Ticker:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Poloniex Ticker Socket')
         self.start()
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('----------------------------CLOSE WebSocket-----------------------')
+        logging.warning('Poloniex Ticker----------------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Poloniex Ticker Socket')
         self.start()
 
     def start(self):

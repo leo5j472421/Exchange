@@ -1,8 +1,10 @@
-from app.poloniex.poloniex import Poloniex
-from app.huobi.huobi import Huobi
+import logging
+import time
 from threading import Thread
+
 from app.huobi.function import *
-import logging, time
+from app.huobi.huobi import Huobi
+from app.poloniex.poloniex import Poloniex
 
 
 class Comparer:
@@ -42,7 +44,8 @@ class Comparer:
         else:
             askslow1 = min(list(map(float, self.exchange1.trader.data[currencyPair].asks.keys())))
             bidshigh1 = max(list(map(float, self.exchange1.trader.data[currencyPair].bids.keys())))
-            askslow2 = min(list(map(float, self.exchange2.trader.data[currencyPair].asks.keys())))  #Huobi trader reset problem
+            askslow2 = min(
+                list(map(float, self.exchange2.trader.data[currencyPair].asks.keys())))  # Huobi trader reset problem
             bidshigh2 = max(list(map(float, self.exchange2.trader.data[currencyPair].bids.keys())))
             nowtime = timestampToDate(time.time())
             print("{}: {}'s Asks low : {}  Bids High : {} , {}'s Asks low : {}  Bids High : {} time : {} ".format(

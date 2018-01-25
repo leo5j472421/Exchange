@@ -68,15 +68,15 @@ class Ticker:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart  Huobi Ticker Socket')
         self.start()
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('----------------------------CLOSE WebSocket-----------------------')
+        logging.warning(' Huobi Ticker----------------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Huobi Ticker Socket')
         self.start()
 
     def start(self):

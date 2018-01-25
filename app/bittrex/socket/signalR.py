@@ -30,8 +30,8 @@ class SignalR(object):
         msg = kwargs
         if 'R' in msg and type(msg['R']) is not bool:
             if 'MarketName' in msg['R'] and msg['R']['MarketName'] is None:
-                msg['R']['MarketName'] = self.cps[0]
-                self.cps.pop(0)
+                msg['R']['MarketName'] = self.cps[0]  # MarketName is None Problem
+                self.cps.pop(0)                       # message FIFO >?
                 del msg['R']['Fills']
                 self.received(kwargs)
 

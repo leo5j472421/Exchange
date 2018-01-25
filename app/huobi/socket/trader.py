@@ -51,6 +51,7 @@ class Trader:
             subscript(ws, c, 'trader')
 
     def on_message(self, ws, message):
+
         if self.i == 10:
             return
         message = json.loads(gzip.decompress(message).decode('utf-8'))
@@ -58,19 +59,20 @@ class Trader:
             self.isReady = False
             channel = message['ch'][message['ch'].find('.') + 1:][0:message['ch'].find('.') + 1]
             if channel in self.currencypair:
-                self.resetData(self.currencypair[channel])
+                cp = self.currencypair[channel]
+                self.resetData(cp)
                 data = message['tick']
                 for side in data:
                     if side == 'asks':
                         for a in data['asks']:
                             trade = td(a[0], a[1])
-                            self.data[self.currencypair[channel]].asks.update({str(a[0]): trade})
-                            self.data[self.currencypair[channel]].total[0] += trade.amount
+                            self.data[cp].asks.update({str(a[0]): trade})
+                            self.data[cp].total[0] += trade.amount
                     else:
                         for a in data['bids']:
                             trade = td(a[0], a[1])
-                            self.data[self.currencypair[channel]].bids.update({str(a[0]): trade})
-                            self.data[self.currencypair[channel]].total[1] += trade.total
+                            self.data[cp].bids.update({str(a[0]): trade})
+                            self.data[cp].total[1] += trade.total
                 self.isReady = True
                 if self.currencypair[channel] in self.targe:
                     callback(self.notice,self.currencypair[channel])
@@ -87,7 +89,7 @@ class Trader:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Huobi Trader Socket')
         self.start()
 
     def on_close(self, ws):
@@ -95,7 +97,7 @@ class Trader:
         logging.warning('Huobi Trader----------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Huobi Trader Socket')
         self.start()
 
     def start(self):

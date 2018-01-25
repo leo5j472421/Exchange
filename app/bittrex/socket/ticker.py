@@ -57,8 +57,9 @@ class Ticker:
     def on_error(self, ws, msg):
         self.isReady = False
         logging.error(msg)
-
-    def on_message(self, ws, message):   # receive Data every 5 second
+        logging.info('Restart Bittrex Ticker Socket')
+        self.start()
+    def on_message(self, ws, message):
         for data in message['Deltas']:
             ticker = t()
             currencypair = reserve(data['MarketName'])
@@ -71,10 +72,10 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('----------------------------CLOSE WebSocket-----------------------')
+        logging.warning(' Bittrex Ticker ----------------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Bittrex Ticker Socket')
         self.start()
 
     def start(self):

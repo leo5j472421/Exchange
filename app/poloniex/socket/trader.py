@@ -42,6 +42,7 @@ class Trader:
             self.data[cp].total[0] += amount
 
     def initOrder(self, rate, amount, side, cp):
+        rate = str(float(rate))                      # 123.30 is 123.3 Problem
         trade = td(float(rate), float(amount))
         self.updateTotal(side, rate, trade.total, trade.amount, cp)
         if side == 'asks':
@@ -51,6 +52,7 @@ class Trader:
 
     def modifyTrade(self, order, side, cp):
         rate = order['rate']
+        rate = str(float(rate))                      # 123.30 is 123.3 Problem
         amount = float(order['amount'])
         total = float(rate) * amount
         trade = td(float(rate), amount)
@@ -61,18 +63,19 @@ class Trader:
             self.data[cp].bids.update({rate: trade})
 
     def removeTrade(self, rate, side, cp):
+        rate = str(float(rate))                      # 123.30 is 123.3 Problem
         if side == 'asks':
             if rate in self.data[cp].asks:
                 self.data[cp].total[0] -= self.data[cp].asks[rate].amount
                 self.data[cp].asks.pop(rate)
             else:
-                logging.warning(rate + ' is not found in asks\'s ' + side + ' order')
+                logging.warning('{} is not found in bids\'s {} order'.format(rate, side))
         else:
             if rate in self.data[cp].bids:
                 self.data[cp].total[1] -= self.data[cp].bids[rate].total
                 self.data[cp].bids.pop(rate)
             else:
-                logging.warning(rate + ' is not found in bids\'s ' + side + ' order')
+                logging.warning('{} is not found in bids\'s {} order'.format(rate, side))
 
     def traderEvent(self, args, cp):
         for data in args:
@@ -131,10 +134,10 @@ class Trader:
         elif message[0] < 1000:  # First msg ( all order book data )
             cp = reserve(Array.markets['byID'][str(message[0])]['currencyPair'])
             if message[2][0][0] == 'i':
-                logging.info('success subscript channel ' + reserve(cp))
+                logging.info('success subscript channel {} '.format(reserve(cp)))
                 self.marketChannel.append(message[0])
                 data = message[2][0][1]['orderBook']
-                logging.info('Init ' + cp + '\'s Order Book Data: ' + str(len(data[0]) + len(data[1])))
+                logging.info('Init {}\'s Order Book Data: {}'.format(cp, str(len(data[0]) + len(data[1]))))
                 for a in [0, 1]:
                     side = 'asks' if a == 0 else 'bids'
                     for i in data[a]:
@@ -147,15 +150,15 @@ class Trader:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Poloniex Trader Socket')
         # self.start()
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('----------------------------CLOSE WebSocket-----------------------')
+        logging.warning('Poloniex Trader----------------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Poloniex Trader Socket')
         # self.start()
 
     def start(self):

@@ -91,7 +91,8 @@ class Trader:
     def on_error(self, ws, msg):
         self.isReady = False
         logging.error(msg)
-
+        logging.info('Restart Bittrex Trader Socket')
+        self.start()
     def on_message(self, ws, message):
         if 'R' in message:
             message = message['R']
@@ -149,10 +150,10 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('----------------------------CLOSE WebSocket-----------------------')
+        logging.warning('Bittrex Trader----------------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart The Socket')
+        logging.info('Restart Bittrex Trader Socket')
         self.start()
 
     def start(self):
