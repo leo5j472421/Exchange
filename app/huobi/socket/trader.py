@@ -56,23 +56,23 @@ class Trader:
             return
         message = json.loads(gzip.decompress(message).decode('utf-8'))
         if 'tick' in message:
-            self.isReady = False
             channel = message['ch'][message['ch'].find('.') + 1:][0:message['ch'].find('.') + 1]
             if channel in self.currencypair:
                 cp = self.currencypair[channel]
-                self.resetData(cp)
+                tds = Traders()
                 data = message['tick']
                 for side in data:
                     if side == 'asks':
                         for a in data['asks']:
                             trade = td(a[0], a[1])
-                            self.data[cp].asks.update({str(a[0]): trade})
-                            self.data[cp].total[0] += trade.amount
+                            tds.asks.update({str(a[0]): trade})
+                            tds.total[0] += trade.amount
                     else:
                         for a in data['bids']:
                             trade = td(a[0], a[1])
-                            self.data[cp].bids.update({str(a[0]): trade})
-                            self.data[cp].total[1] += trade.total
+                            tds.bids.update({str(a[0]): trade})
+                            tds.total[1] += trade.total
+                self.data.update({cp:tds})
                 self.isReady = True
                 if self.currencypair[channel] in self.targe:
                     callback(self.notice,self.currencypair[channel])

@@ -6,7 +6,7 @@ from app.huobi.huobi import Huobi
 from app.ok.okcoin import Okcoin
 from app.bitfinex.bitfinex import Bitfinex
 import logging
-comparer = Comparer(exchange1=Bitfinex(), currencypair=['BTC_USDT','ETH_USDT','ETH_BTC'],targe=['BTC_USDT','ETH_USDT'])
+comparer = Comparer(exchange1=Bitfinex(),exchange2=Okcoin(), currencypair=['BTC_USDT','ETH_USDT','ETH_BTC'],targe=['BTC_USDT','ETH_USDT'])
 comparer.start()
 
 #logging.basicConfig(level=logging.INFO)

@@ -69,8 +69,8 @@ class Trader:
                     else:  # bids
                         self.data[cp].bids.update({str(trade.rate): trade})
                         self.data[cp].total[1] += trade.total
-                self.isReady = True
             else:  # realtime data
+                self.isReady = True
                 trade = td(float(message[1][0]), float(abs(message[1][2])))
                 if message[1][1] == 0: # remove order
                     if str(trade.rate) in self.data[cp].asks:

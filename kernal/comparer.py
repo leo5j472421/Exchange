@@ -15,8 +15,8 @@ class Comparer:
         self.exchange2.__init__(currencypair, targe)
         self.exchange1.setTickerCompare(self.tickerCompare)
         self.exchange2.setTickerCompare(self.tickerCompare)
-        # self.exchange1.setTraderCompare(self.tradercompare)
-        # self.exchange2.setTraderCompare(self.tradercompare)
+        self.exchange1.setTraderCompare(self.tradercompare)
+        self.exchange2.setTraderCompare(self.tradercompare)
 
     def setTarge(self, array):
         self.exchange1.ticker.targe = array
