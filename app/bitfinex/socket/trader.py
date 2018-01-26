@@ -91,13 +91,13 @@ class Trader:
                         self.data[cp].total[1] -= self.data[cp].bids[str(trade.rate)].total
                     self.data[cp].bids.update({str(trade.rate): trade})
                     self.data[cp].total[1] += trade.total
+                Min = min(list(map(float, self.data[cp].asks.keys())))
+                Max = max(list(map(float, self.data[cp].bids.keys())))
                 if cp in self.targe:
-                    #askslow = min(list(map(float, self.data[cp].asks.keys())))
-                    #bidshigh = max(list(map(float, self.data[cp].bids.keys())))
-                    #print('Asks low {} :  {} Bids high {} : {} '.format(str(askslow), self.data[cp].asks[str(askslow)].amount,
-                    #                                               str(bidshigh), self.data[cp].bids[str(bidshigh)].amount))
-
-                    callback(self.notice, cp)
+                    if (not Min == self.data[cp].lastAsksLow) or (not Max == self.data[cp].lastBidsHigh):
+                        self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
+                        self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
+                        callback(self.notice, cp)
 
     def on_error(self, ws, message):
         logging.error(message)

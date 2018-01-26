@@ -42,6 +42,7 @@ class Ticker:
             tick = t()
             cp = currencypair.split('_')
             tick.formate(data[currencypair], cp[1], cp[0])
+            tick.lastprice = tick.price
             rcp = reserve(currencypair)  # reverse
             self.data.update({rcp: tick})
 
@@ -64,10 +65,13 @@ class Ticker:
 
         tk = t()
         tk.formate(newTickerData, base, quote)
+        tk.lastprice = self.data[args[0]].price
         self.data.update({args[0]: tk})
         self.isReady = True
         if args[0] in self.targe:
-            callback(self.notice, args[0])
+            if not self.data[args[0]].lastprice == self.data[args[0]].price:
+                self.data[args[0]].lastprice = self.data[args[0]].price
+                callback(self.notice, args[0])
 
     def on_open(self, ws):
         self.isReady = False
@@ -82,7 +86,7 @@ class Ticker:
             return
         if message[0] == 1002:
             if message[1] == 1:
-                logging.info('success subscript channel '.format(str(message[0])))
+                logging.info('success subscript channel {} '.format(str(message[0])))
                 return
             message[2][0] = reserve(Array.markets['byID'][str(message[2][0])]['currencyPair'])
             data = message[2]

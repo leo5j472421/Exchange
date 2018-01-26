@@ -8,6 +8,7 @@ class Ticker:
         self.price = 0.0
         self.volume = 0.0
         self.change = None
+        self.lastprice = 0.0
         self.timestramp = time.time()
 
     def formate(self, data, base, quote):
@@ -17,4 +18,7 @@ class Ticker:
         self.quote = quote
         self.volume = float(data['vol'])
         #self.change = (float(data['last'])-float(data['close']))/float(data['close'])
-        self.timestramp = time.time()
+        if 'time' in data :
+            self.timestramp = data['time']
+        else:
+            self.timestramp = time.time()

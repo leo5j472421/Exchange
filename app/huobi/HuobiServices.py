@@ -71,7 +71,6 @@ def get_ticker(symbol):
     """
     params = {'symbol': symbol}
     url = MARKET_URL + '/market/detail/merged'
-    print(url)
     return http_get_request(url, params)
 
 

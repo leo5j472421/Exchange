@@ -145,8 +145,13 @@ class Trader:
                             self.data[cp].total[1] += trade.total
             self.isReady = True
 
+            Min = min(list(map(float, self.data[cp].asks.keys())))
+            Max = max(list(map(float, self.data[cp].bids.keys())))
             if cp in self.targe:
-                callback(self.notice,cp)
+                if (not Min == self.data[cp].lastAsksLow) or (not Max == self.data[cp].lastBidsHigh):
+                    self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
+                    self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
+                    callback(self.notice, cp)
 
     def on_close(self, ws):
         self.isReady = False

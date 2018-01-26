@@ -50,6 +50,7 @@ class Trader:
         else:
             self.data[cp].bids.update({rate: trade})
 
+
     def modifyTrade(self, order, side, cp):
         rate = order['rate']
         rate = str(float(rate))                      # 123.30 is 123.3 Problem
@@ -90,8 +91,14 @@ class Trader:
                 else:
                     self.removeTrade(order['rate'], side, cp)
         self.isReady = True
+
+        Min = min(list(map(float, self.data[cp].asks.keys())))
+        Max = max(list(map(float, self.data[cp].bids.keys())))
         if cp in self.targe:
-            callback(self.notice, cp)
+            if ( not Min == self.data[cp].lastAsksLow ) or ( not Max == self.data[cp].lastBidsHigh) :
+                self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
+                self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
+                callback(self.notice, cp)
 
     def on_open(self, ws):
         self.isReady = False
@@ -142,6 +149,8 @@ class Trader:
                     side = 'asks' if a == 0 else 'bids'
                     for i in data[a]:
                         self.initOrder(i, data[a][i], side, cp)
+                self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
+                self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
                 self.isReady = True
                 if cp in self.targe:
                     callback(self.notice, cp)

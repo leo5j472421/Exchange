@@ -40,9 +40,12 @@ class Ticker:
         pair = cp.split('_')
         data = json.loads(requests.get(
             'https://api.bitfinex.com/v1/pubticker/{}'.format(cp.replace('_', '').replace('USDT', 'USD'))).text)
-        tick = t()
-        tick.formate(data, pair[0], pair[1])
-        self.data.update({cp: tick})
+        if 'message' in data:
+            logging.error(data)
+        else:
+            tick = t()
+            tick.formate(data, pair[0], pair[1])
+            self.data.update({cp: tick})
 
     def on_open(self, ws):
         for cp in self.currencypair.values():
@@ -78,10 +81,13 @@ class Ticker:
                         }
                 tick = t()
                 tick.formate(data,pair[0],pair[1])
+                tick.lastprice = self.data[cp].price
                 self.data.update({cp:tick})
                 self.isReady = True
                 if cp in self.targe:
-                    callback(self.notice,cp)
+                    if not self.data[cp].lastprice == self.data[cp].price:
+                        self.data[cp].lastprice = self.data[cp].price
+                        callback(self.notice, cp)
     def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False

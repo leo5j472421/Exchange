@@ -33,11 +33,18 @@ class Ticker:
         self.notice = notice
         self.targe = targe
 
-
+    def resetTick(self,cp) :
+        pair = self.currencypair[cp].split('_')
+        data = get_ticker(cp)
+        if not data == None:
+            tick = t()
+            tick.formate(data['tick'],pair[0],pair[1])
+            self.data.update({self.currencypair[cp]:tick})
     def on_open(self, ws):
         #self.currencypair = get_symbolArray()
         self.isReady = False
         for cp in self.currencypair:
+            self.resetTick(cp)
             subscript(ws,cp)
         # self.getTickerData()
         # logging.info('init huobi\'s market Data')
@@ -45,21 +52,25 @@ class Ticker:
     def on_message(self, ws, message):
         message = json.loads(gzip.decompress(message).decode('utf-8'))
         if 'tick' in message:
-            channel = message['ch'][message['ch'].find('.')+1:][0:message['ch'].find('.')+1]
+            channel = message['ch'].replace('market.','').replace('.detail','')
+            cp = self.currencypair[channel]
             if channel in self.currencypair:
-                pair = self.currencypair[channel].split('_')
+                pair = cp.split('_')
                 data = message['tick']
                 tick = t()
                 tick.formate(data, pair[0], pair[1])
-                self.data.update({self.currencypair[channel]:tick})
+                tick.lastprice = self.data[cp].price
+                self.data.update({cp:tick})
                 self.isReady = True
-                if self.currencypair[channel] in self.targe :
-                    callback(self.notice,self.currencypair[channel])
+                if cp in self.targe:
+                    if not self.data[cp].lastprice == self.data[cp].price:
+                        self.data[cp].lastprice = self.data[cp].price
+                        callback(self.notice,cp)
         elif 'status' in message:
             if message['status'] == 'ok':
                 logging.info('subscript {} channel success'.format(message['subbed']))
             elif message['status'] == 'error':
-                logging.error( message['status']['err-msg'] )
+                logging.error( message['err-msg'] )
                 return
         elif 'ping' in message:
             self.ws.send(json.dumps({"pong": message['ping']}))

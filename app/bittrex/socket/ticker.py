@@ -62,12 +62,16 @@ class Ticker:
     def on_message(self, ws, message):
         for data in message['Deltas']:
             ticker = t()
-            currencypair = reserve(data['MarketName'])
-            pair = currencypair
+            cp = reserve(data['MarketName'])
+            pair = cp
             ticker.formate(data, pair[0], pair[1])
-            self.data.update({currencypair: ticker})
-            if currencypair in self.targe:
-                callback(self.notice,currencypair)
+            ticker.lastprice = self.data[cp].price
+            self.data.update({cp: ticker})
+            self.isReady = True
+            if cp in self.targe:
+                if not self.data[cp].lastprice == self.data[cp].price:
+                    self.data[cp].lastprice = self.data[cp].price
+                    callback(self.notice, cp)
         self.isReady = True
 
     def on_close(self, ws):

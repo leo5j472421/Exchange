@@ -2,6 +2,7 @@ from threading import Thread
 
 import websocket
 
+import requests
 from app.ok.function import *
 from ..model.ticker import Ticker as t
 
@@ -42,6 +43,24 @@ class Ticker:
         self.isReady = False
         for cp in self.currencypair:
             subscript(ws, cp)
+            self.resetTicker(cp)
+
+    def resetTicker(self, cp):
+        pair = cp.split('_')
+        if self.name == 'OKCoin' :
+            cp = cp.replace('USDT','USD' )
+        data = json.loads(requests.get('https://www.{}.com/api/v1/ticker.do?symbol={}'.format(self.name,cp)).text)
+        if 'error_code' in data:
+             logging.error(data)
+        elif 'tick' in data:
+            data['tick'].update( {'time': data['date'] } )
+            tick = t()
+            tick.formate( data['tick'],pair[0],pair[1])
+            tick.lastprice = tick.price
+            self.data.update({cp:tick})
+
+
+
 
     def on_error(self, ws, message):
         logging.error(message)
@@ -59,6 +78,7 @@ class Ticker:
             self.lastTime = time.time()
         message = message[0]
         channel = message['channel'].replace('ok_sub_spot_', '').replace('_ticker', '')
+        cp = channel.upper()
         if self.name is 'OKCoin':
             channel = channel.replace('USD','USDT')
         if 'result' in message['data'].keys():
@@ -70,10 +90,13 @@ class Ticker:
             pair = channel.upper().split('_')
             ticker = t()
             ticker.formate(message['data'], pair[0], pair[1])
-            self.data.update({channel.upper(): ticker})
+            ticker.lastprice = self.data[cp].price
+            self.data.update({cp: ticker})
             self.isReady = True
-            if channel in self.targe:
-                callback(self.notice, channel)
+            if cp in self.targe:
+                if not self.data[cp].lastprice == self.data[cp].price:
+                    self.data[cp].lastprice = self.data[cp].price
+                    callback(self.notice, cp)
 
     def on_close(self, ws):
         self.isReady = False

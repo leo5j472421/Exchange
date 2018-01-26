@@ -40,7 +40,6 @@ class Trader:
             self.resetData(cp)
         self.targe = targe
         self.notice = notice
-        self.i = 0
 
     def resetData(self, cp):
         self.data.update({cp: Traders()})
@@ -51,12 +50,9 @@ class Trader:
             subscript(ws, c, 'trader')
 
     def on_message(self, ws, message):
-
-        if self.i == 10:
-            return
         message = json.loads(gzip.decompress(message).decode('utf-8'))
         if 'tick' in message:
-            channel = message['ch'][message['ch'].find('.') + 1:][0:message['ch'].find('.') + 1]
+            channel = message['ch'].replace('market.','').replace('.depth.step0','')
             if channel in self.currencypair:
                 cp = self.currencypair[channel]
                 tds = Traders()
@@ -74,13 +70,18 @@ class Trader:
                             tds.total[1] += trade.total
                 self.data.update({cp:tds})
                 self.isReady = True
-                if self.currencypair[channel] in self.targe:
-                    callback(self.notice,self.currencypair[channel])
+                Min = min(list(map(float, self.data[cp].asks.keys())))
+                Max = max(list(map(float, self.data[cp].bids.keys())))
+                if cp in self.targe:
+                    if (not Min == self.data[cp].lastAsksLow) or (not Max == self.data[cp].lastBidsHigh):
+                        self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
+                        self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
+                        callback(self.notice, cp)
         elif 'status' in message:
             if message['status'] == 'ok':
                 logging.info('subscript {} channel success'.format(message['subbed']))
             elif message['status'] == 'error':
-                logging.error(message['status']['err-msg'])
+                logging.error(message['err-msg'])
                 return
         elif 'ping' in message:
             self.ws.send(json.dumps({"pong": message['ping']}))

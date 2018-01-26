@@ -1,7 +1,7 @@
 from .socket.ticker import Ticker
 from .socket.trader import Trader
 class Bittrex:
-    def __init__(self,currencypair=['ETH_USDT','BTC_USDT','ETH_BTC'],targe=['ETH_USDT']):
+    def __init__(self,currencypair=['BTC_USDT'],targe=['BTC_USDT']):
         self.ticker = Ticker(targe=targe)
         self.trader = Trader(currencypair=currencypair,targe=targe)
 

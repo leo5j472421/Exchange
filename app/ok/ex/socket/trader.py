@@ -111,8 +111,14 @@ class Trader:
                             self.data[channel].total[1] += trade.total
                             self.data[channel].bids.update({str(a[0]): trade})
             self.isReady = True
-            if channel in self.targe:
-                callback(self.notice, channel)
+            cp = channel
+            Min = min(list(map(float, self.data[cp].asks.keys())))
+            Max = max(list(map(float, self.data[cp].bids.keys())))
+            if cp in self.targe:
+                if (not Min == self.data[cp].lastAsksLow) or (not Max == self.data[cp].lastBidsHigh):
+                    self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
+                    self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
+                    callback(self.notice, cp)
 
     def on_close(self, ws):
         self.isReady = False

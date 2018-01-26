@@ -24,6 +24,7 @@ class Ticker:
         self.price = 0.0
         self.volume = 0.0
         self.change = None
+        self.lastprice = 0.0
         self.timestramp = time.time()
 
     def formate(self, data, base, quote):
