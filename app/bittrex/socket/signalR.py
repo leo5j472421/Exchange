@@ -1,6 +1,4 @@
 import logging
-import time
-
 import cfscrape
 from signalr import Connection
 

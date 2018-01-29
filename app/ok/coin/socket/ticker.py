@@ -40,8 +40,8 @@ class Ticker(exTicker):
         self.lastTime = time.time()
         self.isReady = False
         for cp in self.currencypair:
-            subscript(ws, cp.replace('USDT','USD') )
-        # logging.info('inti OKEx\'s market Data')
+            self.resetTicker(cp)
+            ws.send(json.dumps({'event':'addChannel','channel':'ok_sub_spot_{}_ticker'.format(cp.replace('USDT','USD'))}))
 
     def start(self):
         logging.basicConfig(level=logging.INFO)

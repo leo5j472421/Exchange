@@ -48,8 +48,8 @@ class Trader:
 
     def on_open(self, ws):
         self.isReady = False
-        for c in self.currencypair:
-            subscript(ws, c, 'trader')
+        for cp in self.currencypair:
+            ws.send(json.dumps({'event':'addChannel','channel':'ok_sub_spot_{}_depth'.format(cp)}))
 
     def on_error(self, ws, message):
         logging.error(message)

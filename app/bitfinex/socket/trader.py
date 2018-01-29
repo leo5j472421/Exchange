@@ -2,7 +2,7 @@ from threading import Thread
 
 import websocket
 
-from ..function import *
+from function import *
 from ..model.trader import Trader as td
 from ..model.traders import Traders
 
@@ -45,8 +45,8 @@ class Trader:
 
     def on_open(self, ws):
         self.isReady = False
-        for c in self.currencypair:
-            subscript(ws, c, 'book')
+        for cp in self.currencypair:
+            ws.send(json.dumps({'event': 'subscribe', 'channel': 'book' , 'symbol': cp.replace('USDT', 'USD').replace('_','' ) }))
 
     def on_message(self, ws, message):
         message = json.loads(message)

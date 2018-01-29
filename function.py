@@ -1,6 +1,5 @@
 import json
-import logging
-import time
+import time,logging
 
 
 def timestampToDate(timestamp, combine=True):
@@ -20,8 +19,3 @@ def callback(cb, *args):
             logging.error("error from callback {}: {}".format(cb, e))
 
 
-def subscript(ws, cp, type='ticker'):
-
-    text = {'event': 'subscribe', 'channel': type , 'symbol': cp.replace('_','' ) }
-    ws.send(json.dumps(text))
-    # print(json.dumps(text))  # TickerEvent

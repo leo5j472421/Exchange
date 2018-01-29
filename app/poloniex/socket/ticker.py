@@ -1,8 +1,6 @@
 from threading import Thread
 
 import websocket
-
-from ..arrary import Array
 from ..function import *
 from ..model.ticker import Ticker as t
 from ..polonixeApi import PoloniexApi
@@ -34,10 +32,14 @@ class Ticker:
         self.isReady = False
         self.caller = PoloniexApi()
         self.notice = notice
+        self.ids={}
+        self.cps={}
         self.targe = targe
 
     def getTickerData(self):
         data = self.caller.returnTicker()  # call PoloniexApi Reset The ticker Data
+        self.ids= { market: data[market]['id'] for market in data}
+        self.cps= { str(data[market]['id']):market  for market in data}
         for currencypair in data:
             tick = t()
             cp = currencypair.split('_')
@@ -60,7 +62,7 @@ class Ticker:
             'isFrozen': args[7],
             'high24hr': args[8],
             'low24hr': args[9],
-            'id': Array.markets['byCurrencyPair'][reserve(args[0])]['id']
+            'id': self.ids[reserve(args[0])]
         }
 
         tk = t()
@@ -77,7 +79,7 @@ class Ticker:
         self.isReady = False
         self.getTickerData()
         logging.info('poloniex init market Data')
-        subscript(self.ws, 1002)
+        ws.send(json.dumps({'command': 'subscribe', 'channel': 1002}))
 
     def on_message(self, ws, message):
         message = json.loads(message)
@@ -88,7 +90,7 @@ class Ticker:
             if message[1] == 1:
                 logging.info('success subscript channel {} '.format(str(message[0])))
                 return
-            message[2][0] = reserve(Array.markets['byID'][str(message[2][0])]['currencyPair'])
+            message[2][0] = reserve(self.cps[str(message[2][0])])
             data = message[2]
             self.ticketEvent(data)
         elif message[0] == 1010:  # Poloniex's Websocket HeartBeat
@@ -111,7 +113,7 @@ class Ticker:
 
     def start(self):
         logging.info('poloniex tick start')
-        self.ws = websocket.WebSocketApp('wss://api2.poloniex.com', on_open=self.on_open, on_message=self.on_message,
+        self.ws = websocket.WebSocketApp('wss://api2.poloniex.com/', on_open=self.on_open, on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

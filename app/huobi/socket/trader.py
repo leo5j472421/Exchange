@@ -46,8 +46,8 @@ class Trader:
 
     def on_open(self, ws):
         self.isReady = False
-        for c in self.currencypair:
-            subscript(ws, c, 'trader')
+        for cp in self.currencypair:
+            ws.send(json.dumps({"sub": "market.{}.depth.step0".format(cp), "id": "id10"}))
 
     def on_message(self, ws, message):
         message = json.loads(gzip.decompress(message).decode('utf-8'))

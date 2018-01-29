@@ -1,6 +1,6 @@
 import websocket, traceback, sys, gzip
 from ..model.ticker import Ticker as t
-from ..function import *
+from function import *
 from threading import Thread
 from ..HuobiServices import *
 import logging
@@ -45,7 +45,7 @@ class Ticker:
         self.isReady = False
         for cp in self.currencypair:
             self.resetTick(cp)
-            subscript(ws,cp)
+            ws.send(json.dumps({"sub": "market.{}.detail".format(cp), "id": "id10"}))
         # self.getTickerData()
         # logging.info('init huobi\'s market Data')
 

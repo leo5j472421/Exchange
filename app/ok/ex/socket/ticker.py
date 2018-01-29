@@ -42,8 +42,9 @@ class Ticker:
         self.lastTime = time.time()
         self.isReady = False
         for cp in self.currencypair:
-            subscript(ws, cp)
+            ws.send(json.dumps({'event':'addChannel','channel':'ok_sub_spot_{}_ticker'.format(cp)}))
             self.resetTicker(cp)
+
 
     def resetTicker(self, cp):
         pair = cp.split('_')
@@ -52,11 +53,17 @@ class Ticker:
         data = json.loads(requests.get('https://www.{}.com/api/v1/ticker.do?symbol={}'.format(self.name,cp)).text)
         if 'error_code' in data:
              logging.error(data)
-        elif 'tick' in data:
-            data['tick'].update( {'time': data['date'] } )
+        elif 'tick' in data or 'ticker' in data :
+            if 'tick' in data:
+                ti = 'tick'
+            else:
+                ti = 'ticker'
+            data[ti].update( {'time': data['date'] } )
             tick = t()
-            tick.formate( data['tick'],pair[0],pair[1])
+            tick.formate( data[ti],pair[0],pair[1])
             tick.lastprice = tick.price
+            if self.name == 'OKCoin':
+                cp = cp.replace('USD', 'USDT')
             self.data.update({cp:tick})
 
 
@@ -78,9 +85,9 @@ class Ticker:
             self.lastTime = time.time()
         message = message[0]
         channel = message['channel'].replace('ok_sub_spot_', '').replace('_ticker', '')
-        cp = channel.upper()
         if self.name is 'OKCoin':
             channel = channel.replace('USD','USDT')
+        cp = channel.upper()
         if 'result' in message['data'].keys():
             if message['data']['result']:
                 logging.info('success subscript {}\' {} channel'.format(self.name,message['data']['channel']))

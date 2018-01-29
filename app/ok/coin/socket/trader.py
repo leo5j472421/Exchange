@@ -42,7 +42,7 @@ class Trader(exTrader):
     def on_open(self, ws):
         self.isReady = False
         for cp in self.currencypair:
-            subscript(ws, cp.replace('USDT','USD'), 'trader')
+            ws.send(json.dumps( {'event':'addChannel','channel':'ok_sub_spot_{}_depth'.format(cp.replace('USDT','USD'))}))
 
     def start(self):
         logging.info('OKCoin trader start')

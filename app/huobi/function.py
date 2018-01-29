@@ -19,10 +19,3 @@ def callback(cb, *args):
             logging.error("error from callback {}: {}".format(cb, e))
 
 
-def subscript(ws, cp, type='ticker'):
-    if type == 'ticker':
-        text = {"sub": "market.{}.detail".format(cp), "id": "id10"}
-    elif type == 'trader':
-        text = {"sub": "market.{}.depth.step0".format(cp), "id": "id10"}
-    ws.send(json.dumps(text))
-    # print(json.dumps(text))  # TickerEvent

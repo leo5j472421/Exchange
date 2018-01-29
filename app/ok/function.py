@@ -16,9 +16,3 @@ def callback( cb, *args):
         except Exception as e:
             logging.error("error from callback {}: {}".format(cb, e))
 
-def subscript(ws,cp,type='ticker'):
-    if type == 'ticker':
-        text = {'event':'addChannel','channel':'ok_sub_spot_{}_ticker'.format(cp)}
-    elif type == 'trader':
-        text = {'event':'addChannel','channel':'ok_sub_spot_{}_depth'.format(cp)}
-    ws.send(json.dumps(text))

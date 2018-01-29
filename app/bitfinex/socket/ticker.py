@@ -3,7 +3,7 @@ from threading import Thread
 import requests
 import websocket
 
-from ..function import *
+from function import *
 from ..model.ticker import Ticker as t
 
 '''
@@ -40,17 +40,14 @@ class Ticker:
         pair = cp.split('_')
         data = json.loads(requests.get(
             'https://api.bitfinex.com/v1/pubticker/{}'.format(cp.replace('_', '').replace('USDT', 'USD'))).text)
-        if 'message' in data:
-            logging.error(data)
-        else:
-            tick = t()
-            tick.formate(data, pair[0], pair[1])
-            self.data.update({cp: tick})
+        tick = t()
+        tick.formate(data, pair[0], pair[1])
+        self.data.update({cp: tick})
 
     def on_open(self, ws):
         for cp in self.currencypair.values():
             self.resetTicker(cp)
-            subscript(ws, cp.replace('USDT', 'USD'), 'ticker')
+            ws.send(json.dumps({'event': 'subscribe', 'channel': 'ticker' , 'symbol': cp.replace('USDT', 'USD').replace('_','' ) }))
         self.isReady = True
 
     def on_message(self, ws, message):
@@ -81,13 +78,10 @@ class Ticker:
                         }
                 tick = t()
                 tick.formate(data,pair[0],pair[1])
-                tick.lastprice = self.data[cp].price
                 self.data.update({cp:tick})
                 self.isReady = True
                 if cp in self.targe:
-                    if not self.data[cp].lastprice == self.data[cp].price:
-                        self.data[cp].lastprice = self.data[cp].price
-                        callback(self.notice, cp)
+                    callback(self.notice,cp)
     def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
