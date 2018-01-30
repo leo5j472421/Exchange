@@ -1,5 +1,5 @@
 from threading import Thread
-from app.huobi.function import *
+from function import  *
 from app.huobi.huobi import Huobi
 from app.poloniex.poloniex import Poloniex
 
@@ -32,7 +32,7 @@ class Comparer:
         else:
             nowtime = timestampToDate(time.time() - time.timezone)
             try:
-                print("{}'Price : {} : {} , {} : {} time : {} ".format(currencyPair, self.exchange1, str(
+                print("{}'s Price : {} : {} , {} : {} time : {} ".format(currencyPair, self.exchange1, str(
                     self.exchange1.ticker.data[currencyPair].price), self.exchange2,
                                                                        str(self.exchange2.ticker.data[
                                                                                currencyPair].price),

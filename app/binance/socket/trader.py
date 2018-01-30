@@ -109,19 +109,18 @@ class Trader:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart Bitfinex Trader Socket')
-        self.start()
+
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('Bitfinex Trader----------------------CLOSE WebSocket-----------------------')
+        logging.warning('Binance Trader----------------------CLOSE WebSocket-----------------------')
         logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
         time.sleep(1)
-        logging.info('Restart Bitfinex Trader Socket')
+        logging.info('Restart Binance Trader Socket')
         self.start()
 
     def start(self):
-        logging.info('Bitfinex trader start')
+        logging.info('Binance trader start')
         url = 'wss://stream.binance.com:9443/stream?streams='
         for cp in self.currencypair:
             url += cp.lower() + '@depth/'

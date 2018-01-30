@@ -1,7 +1,7 @@
 from threading import Thread
 import websocket
 from app.ok.ex.socket.ticker import Ticker as exTicker
-from app.ok.function import *
+from function import *
 
 '''
 [{

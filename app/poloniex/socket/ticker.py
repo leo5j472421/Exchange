@@ -99,9 +99,6 @@ class Ticker:
     def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
-        time.sleep(1)
-        logging.info('Restart Poloniex Ticker Socket')
-        self.start()
 
     def on_close(self, ws):
         self.isReady = False

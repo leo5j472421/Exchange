@@ -1,7 +1,7 @@
 from threading import Thread
 import websocket
 from app.ok.ex.model.traders import Traders
-from app.ok.function import *
+from function import *
 from app.ok.ex.socket.trader import Trader as exTrader
 
 '''[{

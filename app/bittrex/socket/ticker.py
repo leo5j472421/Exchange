@@ -57,8 +57,6 @@ class Ticker:
     def on_error(self, ws, msg):
         self.isReady = False
         logging.error(msg)
-        logging.info('Restart Bittrex Ticker Socket')
-        self.start()
     def on_message(self, ws, message):
         for data in message['Deltas']:
             ticker = t()

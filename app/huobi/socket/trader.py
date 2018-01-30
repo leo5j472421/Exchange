@@ -2,7 +2,7 @@ from ..model.trader import Trader as td
 from ..model.traders import Traders
 import websocket, gzip
 from threading import Thread
-from ..function import *
+from function import *
 import logging
 
 '''
@@ -37,12 +37,11 @@ class Trader:
         for a in currencypair:
             self.currencypair.update({a.replace('_', '').lower(): a})
         for cp in currencypair:
-            self.resetData(cp)
+            self.data.update({cp: Traders()})
         self.targe = targe
         self.notice = notice
 
-    def resetData(self, cp):
-        self.data.update({cp: Traders()})
+
 
     def on_open(self, ws):
         self.isReady = False
@@ -90,8 +89,6 @@ class Trader:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart Huobi Trader Socket')
-        self.start()
 
     def on_close(self, ws):
         self.isReady = False

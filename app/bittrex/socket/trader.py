@@ -91,8 +91,6 @@ class Trader:
     def on_error(self, ws, msg):
         self.isReady = False
         logging.error(msg)
-        logging.info('Restart Bittrex Trader Socket')
-        self.start()
     def on_message(self, ws, message):
         if 'R' in message:
             message = message['R']

@@ -7,7 +7,7 @@ from app.ok.okcoin import Okcoin
 from app.bitfinex.bitfinex import Bitfinex
 from app.binance.binance import Binance
 import logging
-comparer = Comparer(exchange1=Binance() ,currencypair=['BTC_USDT', 'ETH_USDT' , 'LTC_USDT','ETH_BTC','LTC_BTC' ],targe=['BTC_USDT','LTC_USDT','ETH_USDT'] )
+comparer = Comparer(currencypair=['BTC_USDT', 'ETH_USDT' , 'LTC_USDT','ETH_BTC','LTC_BTC' ],targe=['BTC_USDT','LTC_USDT','ETH_USDT'] )
 comparer.start()
 
 

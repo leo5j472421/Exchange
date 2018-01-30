@@ -79,8 +79,6 @@ class Ticker:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart  Huobi Ticker Socket')
-        self.start()
 
     def on_close(self, ws):
         self.isReady = False

@@ -3,7 +3,7 @@ from threading import Thread
 import websocket
 
 import requests
-from app.ok.function import *
+from function import *
 from ..model.ticker import Ticker as t
 
 '''
@@ -73,8 +73,6 @@ class Ticker:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart {} Ticker Socket'.format(self.name))
-        self.start()
 
     def on_message(self, ws, message):
         message = json.loads(message)
