@@ -1,5 +1,5 @@
-from ..model.trader import Trader as td
-from ..model.traders import Traders
+from model.trader import Trader as td
+from model.traders import Traders
 from .signalR import SignalR
 from ..bittrexApi import BittrexApi
 from threading import Thread
@@ -96,53 +96,32 @@ class Trader:
             message = message['R']
             cp = reserve(message['MarketName'])
             logging.info('init Bittrex\'s {}  OrderBook '.format(cp))
+            trades = {'asks': [], 'bids': []}
             for sides in ['Sells', 'Buys']:
                 side = 'asks' if sides == 'Sells' else 'bids'
                 if side == 'asks':
                     for a in message[sides]:
-                        trade = td(a['Rate'], a['Quantity'])
-                        self.data[cp].asks.update({str(trade.rate): trade})
-                        self.data[cp].total[0] += trade.amount
+                        trades['asks'].append(td(a['Rate'], a['Quantity']))
                 else:
                     for a in message[sides]:
-                        trade = td(a['Rate'], a['Quantity'])
-                        self.data[cp].bids.update({str(trade.rate): trade})
-                        self.data[cp].total[1] += trade.total
+                        trades['bids'].append(td(a['Rate'], a['Quantity']))
+            self.data[cp].formate(trades,'Bittrex')
             self.isReady = True
             if cp in self.targe:
                 callback(self.notice,cp)
         else:
+            trades = {'asks': [], 'bids': []}
             cp = reserve(message['MarketName'])
             for sides in ['Sells', 'Buys']:
                 side = 'asks' if sides == 'Sells' else 'bids'
                 if side == 'asks':
                     for a in message[sides]:
-                        trade = td(a['Rate'], a['Quantity'])
-                        if a['Type'] == 0:  # ADD to order book
-                            self.data[cp].asks.update({str(trade.rate): trade})
-                            self.data[cp].total[0] += trade.amount
-                        elif a['Type'] == 1:  # Remove OrderBook
-                            self.data[cp].total[0] -= self.data[cp].asks[str(trade.rate)].amount
-                            self.data[cp].asks.pop(str(trade.rate))
-                        elif a['Type'] == 2:  # EDIT the order book
-                            self.data[cp].total[0] -= self.data[cp].asks[str(trade.rate)].amount
-                            self.data[cp].asks.update({str(trade.rate): trade})
-                            self.data[cp].total[0] += trade.amount
+                        trades['asks'].append(td(a['Rate'], a['Quantity']))
                 else:
                     for a in message[sides]:
-                        trade = td(a['Rate'], a['Quantity'])
-                        if a['Type'] == 0:  # ADD to order book
-                            self.data[cp].bids.update({str(trade.rate): trade})
-                            self.data[cp].total[1] += trade.total
-                        elif a['Type'] == 1:  # Remove OrderBook
-                            self.data[cp].total[1] -= self.data[cp].bids[str(trade.rate)].total
-                            self.data[cp].bids.pop(str(trade.rate))
-                        elif a['Type'] == 2:  # EDIT the order book
-                            self.data[cp].total[1] -= self.data[cp].bids[str(trade.rate)].total
-                            self.data[cp].bids.update({str(trade.rate): trade})
-                            self.data[cp].total[1] += trade.total
+                        trades['bids'].append(td(a['Rate'], a['Quantity']))
+            self.data[cp].formate(trades,'Bittrex')
             self.isReady = True
-
             Min = min(list(map(float, self.data[cp].asks.keys())))
             Max = max(list(map(float, self.data[cp].bids.keys())))
             if cp in self.targe:

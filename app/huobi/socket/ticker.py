@@ -1,5 +1,5 @@
 import websocket, traceback, sys, gzip
-from ..model.ticker import Ticker as t
+from model.ticker import Ticker as t
 from function import *
 from threading import Thread
 from ..HuobiServices import *
@@ -36,9 +36,14 @@ class Ticker:
     def resetTick(self,cp) :
         pair = self.currencypair[cp].split('_')
         data = get_ticker(cp)
-        if not data == None:
+        if not data == None :
+            data = data['tick']
+            tickerData = {
+                'price' : data['close'],
+                'baseVolume': data['vol'],
+            }
             tick = t()
-            tick.formate(data['tick'],pair[0],pair[1])
+            tick.formate(tickerData,pair[0],pair[1])
             self.data.update({self.currencypair[cp]:tick})
     def on_open(self, ws):
         #self.currencypair = get_symbolArray()
@@ -57,8 +62,12 @@ class Ticker:
             if channel in self.currencypair:
                 pair = cp.split('_')
                 data = message['tick']
+                tickerData = {
+                    'price': data['close'],
+                    'baseVolume': data['vol'],
+                }
                 tick = t()
-                tick.formate(data, pair[0], pair[1])
+                tick.formate(tickerData, pair[0], pair[1])
                 tick.lastprice = self.data[cp].price
                 self.data.update({cp:tick})
                 self.isReady = True

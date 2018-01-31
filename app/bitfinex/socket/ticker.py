@@ -4,7 +4,7 @@ import requests
 import websocket
 
 from function import *
-from ..model.ticker import Ticker as t
+from model.ticker import Ticker as t
 
 '''
 {
@@ -40,14 +40,19 @@ class Ticker:
         pair = cp.split('_')
         data = json.loads(requests.get(
             'https://api.bitfinex.com/v1/pubticker/{}'.format(cp.replace('_', '').replace('USDT', 'USD'))).text)
+        tickerData = {
+            'price': data['last_price'],
+            'baseVolume' : data['volume'],
+            'time' : data['timestamp']
+        }
         tick = t()
-        tick.formate(data, pair[0], pair[1])
+        tick.formate(tickerData, pair[0], pair[1])
         self.data.update({cp: tick})
 
     def on_open(self, ws):
         for cp in self.currencypair.values():
             self.resetTicker(cp)
-            ws.send(json.dumps({'event': 'subscribe', 'channel': 'ticker' , 'symbol': cp.replace('USDT', 'USD').replace('_','' ) }))
+            ws.send(json.dumps({'event': 'subscribe', 'channel': 'ticker', 'symbol': cp.replace('USDT', 'USD').replace('_','' ) }))
         self.isReady = True
 
     def on_message(self, ws, message):
@@ -65,19 +70,13 @@ class Ticker:
                 return
             else:
                 d = message[1]
-                data = {'bid': d[0],
-                        'bidSize': d[1],
-                        'ask': d[2],
-                        'askSize': d[3],
-                        'dailyChange': d[4],
-                        'dailyChangePerc': d[5],
-                        'last_price':d[6],
-                        'volume': d[7],
-                        'high': d[8],
-                        'low': d[9]
+                tickerdata = {
+                        'change': d[4],
+                        'price':d[6],
+                        'baseVolume': d[7]
                         }
                 tick = t()
-                tick.formate(data,pair[0],pair[1])
+                tick.formate(tickerdata,pair[0],pair[1])
                 self.data.update({cp:tick})
                 self.isReady = True
                 if cp in self.targe:
@@ -86,6 +85,8 @@ class Ticker:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
+        logging.info('Restart  Bitfinex Ticker Socket')
+        self.start()
 
     def on_close(self, ws):
         self.isReady = False

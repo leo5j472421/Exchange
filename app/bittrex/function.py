@@ -1,6 +1,5 @@
-import time, logging,function
-
-
+import time, logging
+from function import *
 def reserve(s):  # BTC-1ST to 1ST_BTC
     s = s.split('-')
     return s[1] + '_' + s[0]

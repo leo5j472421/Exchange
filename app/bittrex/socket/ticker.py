@@ -1,7 +1,7 @@
-import logging
+
 from .signalR import SignalR
-from ..model.ticker import Ticker as t
-from ..function import *
+from model.ticker import Ticker as t
+from app.bittrex.function import *
 from ..bittrexApi import BittrexApi
 from threading import Thread
 import time
@@ -46,10 +46,15 @@ class Ticker:
         datas = self.api.get_market_summaries()
         if datas['success'] is True:
             for data in datas['result']:
-                ticker = t()
                 currencypair = reserve(data['MarketName'])
                 pair = currencypair
-                ticker.formate(data, pair[0], pair[1])
+                TickerData={
+                    'price' : data['Last'],
+                    'baseVolume' : data['Volume'],
+                    'TimeStamp' : data['TimeStamp']
+                }
+                ticker = t()
+                ticker.formate(TickerData, pair[0], pair[1])
                 self.data.update({currencypair: ticker})
             if currencypair in self.targe:
                 callback(self.notice,currencypair)
@@ -59,10 +64,15 @@ class Ticker:
         logging.error(msg)
     def on_message(self, ws, message):
         for data in message['Deltas']:
-            ticker = t()
             cp = reserve(data['MarketName'])
             pair = cp
-            ticker.formate(data, pair[0], pair[1])
+            ticker = t()
+            TickerData = {
+                'price': data['Last'],
+                'baseVolume': data['Volume'],
+                'TimeStamp': data['TimeStamp']
+            }
+            ticker.formate(TickerData, pair[0], pair[1])
             ticker.lastprice = self.data[cp].price
             self.data.update({cp: ticker})
             self.isReady = True

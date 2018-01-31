@@ -3,8 +3,8 @@ from threading import Thread
 import websocket
 
 from function import *
-from ..model.trader import Trader as td
-from ..model.traders import Traders
+from model.trader import Trader as td
+from model.traders import Traders
 
 '''
 [        Snapshot
@@ -57,6 +57,7 @@ class Trader:
             elif message['event'] == 'error':
                 logging.error(message)
         elif self.channelId[str(message[0])] in self.currencypair.values():
+            trades = {'asks': [], 'bids': []}
             cp = self.channelId[str(message[0])]
             if message[1] == 'hb': # HeartBeat
                 return
@@ -64,33 +65,26 @@ class Trader:
                 for data in message[1]:
                     trade = td(float(data[0]), float(abs(data[2])))
                     if data[2] < 0:  # asks
-                        self.data[cp].asks.update({str(trade.rate): trade})
-                        self.data[cp].total[0] += trade.amount
+                        trades['asks'].append(td(float(data[0]), float(abs(data[2]))))
                     else:  # bids
-                        self.data[cp].bids.update({str(trade.rate): trade})
-                        self.data[cp].total[1] += trade.total
+                        trades['bids'].append(td(float(data[0]), float(abs(data[2]))))
+                self.data[cp].formate(trades,'Bitfine')
             else:  # realtime data
-                self.isReady = True
                 trade = td(float(message[1][0]), float(abs(message[1][2])))
                 if message[1][1] == 0: # remove order
                     if str(trade.rate) in self.data[cp].asks:
-                        self.data[cp].total[0] -= self.data[cp].asks[str(trade.rate)].amount
-                        self.data[cp].asks.pop(str(trade.rate))
+                        trades['asks'].append(td(float(message[1][0]),0.0))
                     elif str(trade.rate) in self.data[cp].bids:
-                        self.data[cp].total[0] -= self.data[cp].bids[str(trade.rate)].amount
-                        self.data[cp].bids.pop(str(trade.rate))
+                        trades['bids'].append(td(float(message[1][0]),0.0))
                     else:
                         logging.warning('{} is not in the Bitfinex\'s Order Book '.format(str(trade.rate)))
                 elif message[1][2] < 0:  # asks
-                    if str(trade.rate) in self.data[cp].asks:  # modify
-                        self.data[cp].total[0] -= self.data[cp].asks[str(trade.rate)].amount
-                    self.data[cp].asks.update({str(trade.rate): trade})
-                    self.data[cp].total[0] += trade.amount
+                    trades['asks'].append(td(float(message[1][0]), float(abs(message[1][2]))))
                 elif message[1][2] > 0:  # bids
-                    if str(trade.rate) in self.data[cp].asks:  # modify
-                        self.data[cp].total[1] -= self.data[cp].bids[str(trade.rate)].total
-                    self.data[cp].bids.update({str(trade.rate): trade})
-                    self.data[cp].total[1] += trade.total
+                    trades['bids'].append(td(float(message[1][0]), float(abs(message[1][2]))))
+
+                self.data[cp].formate(trades,'Bitfinex')
+                self.isReady = True
                 Min = min(list(map(float, self.data[cp].asks.keys())))
                 Max = max(list(map(float, self.data[cp].bids.keys())))
                 if cp in self.targe:

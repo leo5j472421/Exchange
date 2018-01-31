@@ -2,7 +2,7 @@ from threading import Thread
 
 import websocket
 from ..function import *
-from ..model.ticker import Ticker as t
+from model.ticker import Ticker as t
 from ..polonixeApi import PoloniexApi
 
 '''
@@ -43,6 +43,8 @@ class Ticker:
         for currencypair in data:
             tick = t()
             cp = currencypair.split('_')
+            data[currencypair].update({'price': data[currencypair]['last']})
+            data[currencypair].update({'change': float(data[currencypair]['percentChange'])*100})
             tick.formate(data[currencypair], cp[1], cp[0])
             tick.lastprice = tick.price
             rcp = reserve(currencypair)  # reverse
@@ -53,16 +55,15 @@ class Ticker:
         base = pairAr[0]
         quote = pairAr[1]
         newTickerData = {
-            'last': args[1],
+            'price': args[1],
             'lowestAsk': args[2],
             'highestBid': args[3],
-            'percentChange': args[4],
+            'change': float(args[4])*100,
             'baseVolume': args[5],
             'quoteVolume': args[6],
             'isFrozen': args[7],
             'high24hr': args[8],
             'low24hr': args[9],
-            'id': self.ids[reserve(args[0])]
         }
 
         tk = t()

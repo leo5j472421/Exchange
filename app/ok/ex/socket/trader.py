@@ -3,8 +3,8 @@ from threading import Thread
 import websocket
 
 from function import *
-from ..model.trader import Trader as td
-from ..model.traders import Traders
+from model.trader import Trader as td
+from model.traders import Traders
 
 '''[{
     'data': {
@@ -31,7 +31,6 @@ class Trader:
     def __init__(self, currencypair=['BTC_USDT'], targe=['BTC_USDT'], notice=None):
         self.p = True
         self.data = {}
-        self.resetData(currencypair)
         self.isReady = False
         self.currencypair = currencypair
         for a in self.currencypair:
@@ -40,11 +39,6 @@ class Trader:
         self.targe = targe
         self.notice = notice
         self.name = 'OKEx'
-
-    def resetData(self, currencypair):
-        self.data = {}
-        for a in currencypair:
-            self.data.update({a: Traders()})
 
     def on_open(self, ws):
         self.isReady = False
@@ -73,41 +67,15 @@ class Trader:
             else:
                 logging.error(message['data']['error_msg'])
         if channel in self.currencypair:
+            trades = {'asks': [], 'bids': []}
             for side in message['data']:
-                if side == 'asks':
+                if side == 'asks' :
                     for a in message['data']['asks']:
-                        a[0] = str(float(a[0]))
-                        trade = td(float(a[0]), float(a[1]))
-                        if a[1] == '0':
-                            if a[0] not in self.data[channel].asks:
-                                print('{} in not in {}\'s bids list '.format(a[1], self.name))
-                            else:
-                                self.data[channel].total[0] -= self.data[channel].asks[a[0]].amount
-                                self.data[channel].asks.pop(a[0])
-                        elif a[0] in self.data[channel].asks:
-                            self.data[channel].total[0] -= self.data[channel].asks[a[0]].amount
-                            self.data[channel].total[0] += trade.amount
-                            self.data[channel].asks.update({str(trade.rate): trade})
-                        else:
-                            self.data[channel].total[0] += trade.amount
-                            self.data[channel].asks.update({str(trade.rate): trade})
-                elif side == 'bids':
+                        trades['asks'].append(td(float(a[0]), float(a[1])))
+                elif side == 'bids' :
                     for a in message['data']['bids']:
-                        a[0] = str(float(a[0]))  # 123 is 123.0 problem
-                        trade = td(float(a[0]), float(a[1]))
-                        if a[1] == '0':
-                            if a[0] not in self.data[channel].bids:
-                                print('{} in not in {}\'s bids list '.format(a[1], self.name))
-                            else:
-                                self.data[channel].total[1] -= self.data[channel].bids[a[0]].total
-                                self.data[channel].bids.pop(a[0])
-                        elif a[0] in self.data[channel].bids:
-                            self.data[channel].total[1] -= self.data[channel].bids[a[0]].total
-                            self.data[channel].total[1] += trade.total
-                            self.data[channel].bids.update({a[0]: trade})
-                        else:
-                            self.data[channel].total[1] += trade.total
-                            self.data[channel].bids.update({str(a[0]): trade})
+                        trades['bids'].append(td(float(a[0]), float(a[1])))
+            self.data[channel].formate(trades,self.name)
             self.isReady = True
             cp = channel
             Min = min(list(map(float, self.data[cp].asks.keys())))

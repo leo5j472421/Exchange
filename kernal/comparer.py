@@ -39,10 +39,10 @@ class Comparer:
                                                                        nowtime))
             except KeyError:
                 if currencyPair not in self.exchange1.ticker.data:
-                    logging.warning('{} is not support {} currency pair '.format(self.exchange1, currencyPair))
+                    logging.warning('{} ticker is not support {} currency pair '.format(self.exchange1, currencyPair))
                 else:
-                    logging.warning('{} is not support {} currency pair '.format(self.exchange2, currencyPair))
-                self.noSupport.append(currencyPair)
+                    logging.warning('{} ticker is not support {} currency pair '.format(self.exchange2, currencyPair))
+                #self.noSupport.append(currencyPair)
 
     def tradercompare(self, currencyPair):
         if currencyPair in self.noSupport:
@@ -62,10 +62,10 @@ class Comparer:
                     currencyPair, self.exchange1, askslow1, bidshigh1, self.exchange2, askslow2, bidshigh2, nowtime))
         except ValueError:
             if len(self.exchange1.trader.data[currencyPair].asks) == 0:
-                logging.warning('{} is not support {} currency pair '.format(self.exchange1, currencyPair))
+                logging.warning('{} trader is not support {} currency pair '.format(self.exchange1, currencyPair))
             else:
-                logging.warning('{} is not support {} currency pair '.format(self.exchange2, currencyPair))
-            self.noSupport.append(currencyPair)
+                logging.warning('{} trader is not support {} currency pair '.format(self.exchange2, currencyPair))
+            #self.noSupport.append(currencyPair)
 
     def start(self):
         logging.info('compare start')

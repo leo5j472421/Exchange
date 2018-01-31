@@ -1,8 +1,8 @@
 from threading import Thread
 import websocket,ssl,requests,json
 from function import *
-from app.binance.model.trader import Trader as td
-from app.binance.model.traders import Traders
+from model.trader import Trader as td
+from model.traders import Traders
 
 '''
 [        Snapshot
@@ -43,59 +43,39 @@ class Trader:
 
     def on_open(self, ws):
         self.isReady = False
-        for c in self.currencypair:
-            data = json.loads(requests.get('https://www.binance.com/api/v1/depth?symbol={}&limit=1000'.format(c)).text)
+        for cp in self.currencypair:
+            data = json.loads(requests.get('https://www.binance.com/api/v1/depth?symbol={}&limit=1000'.format(cp)).text)
+            cp = self.currencypair[cp]
+            trades = {'asks': [], 'bids': []}
             for side in data:
                 if side == 'asks':
                     for order in data[side]:
-                        rate = str(float(order[0]))
-                        trade = td(float(rate),float(order[1]))
-                        self.data[self.currencypair[c]].total[0] += trade.amount
-                        self.data[self.currencypair[c]].asks.update({rate:trade})
+                        trades['asks'].append(td(float(order[0]),float(order[1])))
+
+
+
+                        #ate = str(float(order[0]))
+                        #trade = td(float(rate),float(order[1]))
+                        #self.data[self.currencypair[c]].total[0] += trade.amount
+                        #self.data[self.currencypair[c]].asks.update({rate:trade})
                 elif side == 'bids':
                     for order in data[side]:
-                        rate = str(float(order[0]))
-                        trade = td(float(rate),float(order[1]))
-                        self.data[self.currencypair[c]].total[1] += trade.total
-                        self.data[self.currencypair[c]].bids.update({rate:trade})
+                        trades['bids'].append(td(float(order[0]), float(order[1])))
+            self.data[cp].formate(trades,'Binance')
 
     def on_message(self, ws, message):
         message = json.loads(message)
         data = message['data']
         cp = self.currencypair[data['s']]
+        trades = {'asks': [], 'bids': []}
         for side in data:
             if side == 'a':
                 for order in data[side]:
-                    rate = str(float(order[0]))
-                    amount = float(order[1])
-                    trade = td(float(rate), amount)
-                    if not rate in self.data[cp].asks:  # Insert
-                        if not amount == 0.0 :
-                            self.data[cp].total[0] += trade.amount
-                            self.data[cp].asks.update({rate:trade})
-                    elif not amount == 0.0 : # modify
-                        self.data[cp].total[0] -= self.data[cp].asks[rate].amount
-                        self.data[cp].total[0] += trade.amount
-                        self.data[cp].asks.update({rate:trade})
-                    else: # remove
-                        self.data[cp].total[0] -= self.data[cp].asks[rate].amount
-                        self.data[cp].asks.pop(rate)
+                    trades['asks'].append(td(float(order[0]), float(order[1])))
             elif side == 'b':
                 for order in data[side]:
-                    rate = str(float(order[0]))
-                    amount = float(order[1])
-                    trade = td(float(rate), amount)
-                    if not rate in self.data[cp].bids:  # Insert
-                        if not amount == 0.0 :
-                           self.data[cp].total[1] += trade.total
-                           self.data[cp].bids.update({rate:trade})
-                    elif not amount == 0.0 : # modify
-                        self.data[cp].total[1] -= self.data[cp].bids[rate].amount
-                        self.data[cp].total[1] += trade.amount
-                        self.data[cp].bids.update({rate:trade})
-                    else : # remove
-                        self.data[cp].total[1] -= self.data[cp].bids[rate].amount
-                        self.data[cp].bids.pop(rate)
+                    trades['bids'].append(td(float(order[0]), float(order[1])))
+        self.data[cp].formate(trades,'Binance')
         self.isReady = True
         Min = min(list(map(float, self.data[cp].asks.keys())))
         Max = max(list(map(float, self.data[cp].bids.keys())))

@@ -4,7 +4,7 @@ import websocket
 
 import requests
 from function import *
-from ..model.ticker import Ticker as t
+from model.ticker import Ticker as t
 
 '''
 [{
@@ -54,18 +54,25 @@ class Ticker:
         if 'error_code' in data:
              logging.error(data)
         elif 'tick' in data or 'ticker' in data :
+            ts = data['date']
             if 'tick' in data:
-                ti = 'tick'
+                data = data['tick']
             else:
-                ti = 'ticker'
-            data[ti].update( {'time': data['date'] } )
+                data = data['ticker']
+            #data.update( {'time': data['date'] } )
+            tickData = {
+                'price' : data['last'],
+                'baseVolume' : data['vol'],
+                'time' : ts
+            }
             tick = t()
-            tick.formate( data[ti],pair[0],pair[1])
+            tick.formate( tickData,pair[0],pair[1])
             tick.lastprice = tick.price
             if self.name == 'OKCoin':
                 cp = cp.replace('USD', 'USDT')
             self.data.update({cp:tick})
-
+            if cp in self.targe:
+                callback(self.notice, cp)
 
 
 
@@ -93,10 +100,17 @@ class Ticker:
                 logging.error(message['data']['error_msg'])
         elif channel in self.currencypair:
             pair = channel.upper().split('_')
-            ticker = t()
-            ticker.formate(message['data'], pair[0], pair[1])
-            ticker.lastprice = self.data[cp].price
-            self.data.update({cp: ticker})
+            data = message['data']
+            tickData = {
+                'price' : data['last'],
+                'baseVolume' : data['vol'],
+            }
+            tick = t()
+            tick.formate( tickData,pair[0],pair[1])
+            #ticker = t()
+            #ticker.formate(message['data'], pair[0], pair[1])
+            tick.lastprice = self.data[cp].price
+            self.data.update({cp: tick})
             self.isReady = True
             if cp in self.targe:
                 if not self.data[cp].lastprice == self.data[cp].price:

@@ -4,7 +4,7 @@ from threading import Thread
 import websocket,json
 
 from function import *
-from ..model.ticker import Ticker as t
+from model.ticker import Ticker as t
 
 '''
 {
@@ -57,8 +57,14 @@ class Ticker:
             try: ## KeyError Not in the CurrencyPair
                 cp = self.currencypair[data['s']]
                 pair = cp.split('_')
+                tickerData = {
+                    'price':data['c'],
+                    'change' : float(data['p'])*100,
+                    'baseVolume' : data['v'],
+                    'time' : data['E']
+                }
                 tick = t()
-                tick.formate(data, pair[0], pair[1])
+                tick.formate(tickerData, pair[0], pair[1])
 
                 if cp in self.data:
                     tick.lastprice = self.data[cp].price
@@ -89,6 +95,5 @@ class Ticker:
         self.ws = websocket.WebSocketApp('wss://stream.binance.com:9443/ws/!ticker@arr', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
-        # self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
         self.thread = Thread(target=self.ws.run_forever, kwargs={'sslopt': {"cert_reqs": ssl.CERT_NONE}})
         self.thread.start()

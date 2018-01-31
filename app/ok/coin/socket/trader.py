@@ -1,6 +1,6 @@
 from threading import Thread
 import websocket
-from app.ok.ex.model.traders import Traders
+from model.traders import Traders
 from function import *
 from app.ok.ex.socket.trader import Trader as exTrader
 
@@ -28,7 +28,6 @@ class Trader(exTrader):
     def __init__(self, currencypair=['BTC_USDT'], targe=['BTC_USDT'], notice=None):
         self.p = True
         self.data = {}
-        self.resetData(currencypair)
         self.isReady = False
         self.currencypair = currencypair
         for a in self.currencypair:

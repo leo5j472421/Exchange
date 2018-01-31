@@ -1,5 +1,5 @@
-from ..model.trader import Trader as td
-from ..model.traders import Traders
+from model.trader import Trader as td
+from model.traders import Traders
 import websocket, gzip
 from threading import Thread
 from function import *
@@ -56,17 +56,17 @@ class Trader:
                 cp = self.currencypair[channel]
                 tds = Traders()
                 data = message['tick']
+                trades = {'asks': [], 'bids': []}
                 for side in data:
                     if side == 'asks':
                         for a in data['asks']:
-                            trade = td(a[0], a[1])
-                            tds.asks.update({str(a[0]): trade})
-                            tds.total[0] += trade.amount
+                            trades['asks'].append(td(a[0], a[1]))
                     else:
                         for a in data['bids']:
-                            trade = td(a[0], a[1])
-                            tds.bids.update({str(a[0]): trade})
-                            tds.total[1] += trade.total
+                            trades['bids'].append(td(a[0], a[1]))
+                tds.formate(trades,'Huibo')
+                tds.lastAsksLow = self.data[cp].lastAsksLow
+                tds.lastBidsHigh = self.data[cp].lastBidsHigh
                 self.data.update({cp:tds})
                 self.isReady = True
                 Min = min(list(map(float, self.data[cp].asks.keys())))
