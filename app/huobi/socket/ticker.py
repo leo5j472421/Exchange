@@ -47,10 +47,10 @@ class Ticker:
             self.data.update({self.currencypair[cp]:tick})
     def on_open(self, ws):
         #self.currencypair = get_symbolArray()
-        self.isReady = False
         for cp in self.currencypair:
             self.resetTick(cp)
             ws.send(json.dumps({"sub": "market.{}.detail".format(cp), "id": "id10"}))
+        self.isReady = True
         # self.getTickerData()
         # logging.info('init huobi\'s market Data')
 
@@ -92,7 +92,7 @@ class Ticker:
     def on_close(self, ws):
         self.isReady = False
         logging.warning(' Huobi Ticker----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
+        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
         time.sleep(1)
         logging.info('Restart Huobi Ticker Socket')
         self.start()

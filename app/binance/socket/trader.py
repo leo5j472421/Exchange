@@ -51,13 +51,6 @@ class Trader:
                 if side == 'asks':
                     for order in data[side]:
                         trades['asks'].append(td(float(order[0]),float(order[1])))
-
-
-
-                        #ate = str(float(order[0]))
-                        #trade = td(float(rate),float(order[1]))
-                        #self.data[self.currencypair[c]].total[0] += trade.amount
-                        #self.data[self.currencypair[c]].asks.update({rate:trade})
                 elif side == 'bids':
                     for order in data[side]:
                         trades['bids'].append(td(float(order[0]), float(order[1])))
@@ -94,7 +87,7 @@ class Trader:
     def on_close(self, ws):
         self.isReady = False
         logging.warning('Binance Trader----------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
+        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
         time.sleep(1)
         logging.info('Restart Binance Trader Socket')
         self.start()

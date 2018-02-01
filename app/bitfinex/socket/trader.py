@@ -101,7 +101,7 @@ class Trader:
     def on_close(self, ws):
         self.isReady = False
         logging.warning('Bitfinex Trader----------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
+        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
         time.sleep(1)
         logging.info('Restart Bitfinex Trader Socket')
         self.start()

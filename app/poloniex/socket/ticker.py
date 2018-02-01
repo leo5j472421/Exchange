@@ -1,8 +1,10 @@
+import ssl
 from threading import Thread
 
 import websocket
-from ..function import *
+
 from model.ticker import Ticker as t
+from ..function import *
 from ..polonixeApi import PoloniexApi
 
 '''
@@ -32,49 +34,44 @@ class Ticker:
         self.isReady = False
         self.caller = PoloniexApi()
         self.notice = notice
-        self.ids={}
-        self.cps={}
+        self.ids = {}
+        self.cps = {}
         self.targe = targe
 
     def getTickerData(self):
         data = self.caller.returnTicker()  # call PoloniexApi Reset The ticker Data
-        self.ids= { market: data[market]['id'] for market in data}
-        self.cps= { str(data[market]['id']):market  for market in data}
+        self.ids = {market: data[market]['id'] for market in data}
+        self.cps = {str(data[market]['id']): market for market in data}
         for currencypair in data:
             tick = t()
             cp = currencypair.split('_')
             data[currencypair].update({'price': data[currencypair]['last']})
-            data[currencypair].update({'change': float(data[currencypair]['percentChange'])*100})
+            data[currencypair].update({'change': float(data[currencypair]['percentChange']) * 100})
             tick.formate(data[currencypair], cp[1], cp[0])
             tick.lastprice = tick.price
             rcp = reserve(currencypair)  # reverse
             self.data.update({rcp: tick})
+        self.isReady = True
 
     def ticketEvent(self, args):
-        pairAr = args[0].split('_')
+        cp = args[0]
+        pairAr = cp.split('_')
         base = pairAr[0]
         quote = pairAr[1]
         newTickerData = {
             'price': args[1],
-            'lowestAsk': args[2],
-            'highestBid': args[3],
-            'change': float(args[4])*100,
+            'change': float(args[4]) * 100,
             'baseVolume': args[5],
-            'quoteVolume': args[6],
-            'isFrozen': args[7],
-            'high24hr': args[8],
-            'low24hr': args[9],
         }
-
         tk = t()
         tk.formate(newTickerData, base, quote)
-        tk.lastprice = self.data[args[0]].price
+        tk.lastprice = self.data[cp].price
         self.data.update({args[0]: tk})
         self.isReady = True
-        if args[0] in self.targe:
-            if not self.data[args[0]].lastprice == self.data[args[0]].price:
-                self.data[args[0]].lastprice = self.data[args[0]].price
-                callback(self.notice, args[0])
+        if cp in self.targe:
+            if not self.data[cp].lastprice == self.data[cp].price:
+                self.data[cp].lastprice = self.data[cp].price
+                callback(self.notice, cp)
 
     def on_open(self, ws):
         self.isReady = False
@@ -104,14 +101,15 @@ class Ticker:
     def on_close(self, ws):
         self.isReady = False
         logging.warning('Poloniex Ticker----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
+        logging.warning('Close Time : ' + timestampToDate(time.time() - time.timezone, True))
         time.sleep(1)
         logging.info('Restart Poloniex Ticker Socket')
         self.start()
 
     def start(self):
         logging.info('poloniex tick start')
-        self.ws = websocket.WebSocketApp('wss://api2.poloniex.com/', on_open=self.on_open, on_message=self.on_message,
+        self.ws = websocket.WebSocketApp('wss://api2.poloniex.com:443', on_open=self.on_open,
+                                         on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
-        self.thread = Thread(target=self.ws.run_forever)
+        self.thread = Thread(target=self.ws.run_forever, kwargs={'sslopt': {"cert_reqs": ssl.CERT_NONE}})
         self.thread.start()

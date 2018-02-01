@@ -56,8 +56,8 @@ class Ticker:
                 ticker = t()
                 ticker.formate(TickerData, pair[0], pair[1])
                 self.data.update({currencypair: ticker})
-            if currencypair in self.targe:
-                callback(self.notice,currencypair)
+            self.isReady = True
+
 
     def on_error(self, ws, msg):
         self.isReady = False
@@ -85,7 +85,7 @@ class Ticker:
     def on_close(self, ws):
         self.isReady = False
         logging.warning(' Bittrex Ticker ----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
+        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
         time.sleep(1)
         logging.info('Restart Bittrex Ticker Socket')
         self.start()

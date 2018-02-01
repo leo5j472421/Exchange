@@ -1,7 +1,7 @@
 import ssl
 from threading import Thread
 
-import websocket,json
+import websocket,json , requests
 
 from function import *
 from model.ticker import Ticker as t
@@ -43,12 +43,26 @@ class Ticker:
         self.currencypair = {}
         for a in currencypair:
             self.currencypair.update({a.replace('_', ''): a})
-
         self.notice = notice
         self.targe = targe
         self.channelId = {}
-
+    def resetTick(self):
+        data = json.loads(requests.get('https://api.binance.com/api/v1/ticker/24hr').text)  # reset ticker
+        for tick in data:
+            if tick['symbol'] in self.currencypair:
+                cp = self.currencypair[tick['symbol']]
+                pair = cp.split('_')
+                tickerData = {
+                    'price': tick['lastPrice'],
+                    'change': float(tick['priceChange']) * 100,
+                    'baseVolume': tick['volume'],
+                    'time': tick['closeTime']
+                }
+                tick = t()
+                tick.formate(tickerData, pair[0], pair[1])
+                self.data.update({cp: tick})
     def on_open(self, ws):
+        self.resetTick()
         self.isReady = True
 
     def on_message(self, ws, message):
@@ -85,7 +99,7 @@ class Ticker:
     def on_close(self, ws):
         self.isReady = False
         logging.warning(' Binance Ticker----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
+        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
         time.sleep(1)
         logging.info('Restart Binance Ticker Socket')
         self.start()

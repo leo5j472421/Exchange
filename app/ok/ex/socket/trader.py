@@ -89,7 +89,7 @@ class Trader:
     def on_close(self, ws):
         self.isReady = False
         logging.warning('{} Trade----------------------------CLOSE WebSocket-----------------------'.format(self.name))
-        logging.warning('Close Time : '.format(timestampToDate(int(time.mktime(time.localtime())), True)))
+        logging.warning('Close Time : '.format(timestampToDate(time.time()-time.timezone, True)))
         time.sleep(1)
         logging.info('Restart {} Trade Socket'.format(self.name))
         self.start()

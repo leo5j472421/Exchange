@@ -40,10 +40,10 @@ class Ticker:
 
     def on_open(self, ws):
         self.lastTime = time.time()
-        self.isReady = False
         for cp in self.currencypair:
             ws.send(json.dumps({'event':'addChannel','channel':'ok_sub_spot_{}_ticker'.format(cp)}))
             self.resetTicker(cp)
+        self.isReady = True
 
 
     def resetTicker(self, cp):
@@ -120,7 +120,7 @@ class Ticker:
     def on_close(self, ws):
         self.isReady = False
         logging.warning('{} Ticker----------------------------CLOSE WebSocket-----------------------'.format(self.name))
-        logging.warning('Close Time : ' + timestampToDate(int(time.mktime(time.localtime())), True))
+        logging.warning('Close Time : ' + timestampToDate(time.time() - time.timezone , True))
         time.sleep(1)
         logging.info('Restart {} Ticker Socket'.format(self.name))
         self.start()
