@@ -84,7 +84,6 @@ class Trader:
         self.notice = notice
 
     def on_open(self, ws):
-        logging.info('init Bittrex\'s market Data')
         for cp in self.currencypair:
             self.ws.subscribe('trader', reserve2(cp))
 
@@ -106,6 +105,7 @@ class Trader:
                     for a in message[sides]:
                         trades['bids'].append(td(a['Rate'], a['Quantity']))
             self.data[cp].formate(trades,'Bittrex')
+            logging.info(MSG_RESET_TICKER_DATA.format('Bittrex',cp))
             self.isReady = True
             if cp in self.targe:
                 callback(self.notice,cp)
@@ -132,14 +132,12 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('Bittrex Trader----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Bittrex','trader',timestampToDate()))
         time.sleep(1)
-        logging.info('Restart Bittrex Trader Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Bittrex','trader'))
         self.start()
 
     def start(self):
-        logging.basicConfig(level=logging.INFO)
         self.ws = SignalR(on_open=self.on_open, on_message=self.on_message,
                           on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)

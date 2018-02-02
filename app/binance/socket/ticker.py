@@ -1,7 +1,8 @@
 import ssl
 from threading import Thread
 
-import websocket,json , requests
+import requests
+import websocket
 
 from function import *
 from model.ticker import Ticker as t
@@ -46,6 +47,7 @@ class Ticker:
         self.notice = notice
         self.targe = targe
         self.channelId = {}
+
     def resetTick(self):
         data = json.loads(requests.get('https://api.binance.com/api/v1/ticker/24hr').text)  # reset ticker
         for tick in data:
@@ -61,21 +63,23 @@ class Ticker:
                 tick = t()
                 tick.formate(tickerData, pair[0], pair[1])
                 self.data.update({cp: tick})
+
     def on_open(self, ws):
         self.resetTick()
+        logging.info(MSG_RESET_TICKER_DATA.format('Binance'))
         self.isReady = True
 
     def on_message(self, ws, message):
         message = json.loads(message)
         for data in message:
-            try: ## KeyError Not in the CurrencyPair
+            try:  ## KeyError Not in the CurrencyPair
                 cp = self.currencypair[data['s']]
                 pair = cp.split('_')
                 tickerData = {
-                    'price':data['c'],
-                    'change' : float(data['p'])*100,
-                    'baseVolume' : data['v'],
-                    'time' : data['E']
+                    'price': data['c'],
+                    'change': float(data['p']) * 100,
+                    'baseVolume': data['v'],
+                    'time': data['E']
                 }
                 tick = t()
                 tick.formate(tickerData, pair[0], pair[1])
@@ -90,22 +94,21 @@ class Ticker:
                         callback(self.notice, cp)
             except:
                 pass
+
     def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
         time.sleep(1)
 
-
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(' Binance Ticker----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Binance', 'ticker', timestampToDate()))
         time.sleep(1)
-        logging.info('Restart Binance Ticker Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Binance', 'ticker'))
         self.start()
 
     def start(self):
-        logging.info('Binance tick start')
+        logging.info(MSG_SOCKET_START.format('Binance', 'ticker'))
         self.ws = websocket.WebSocketApp('wss://stream.binance.com:9443/ws/!ticker@arr', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

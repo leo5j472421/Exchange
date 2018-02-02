@@ -55,6 +55,7 @@ class Trader:
                     for order in data[side]:
                         trades['bids'].append(td(float(order[0]), float(order[1])))
             self.data[cp].formate(trades,'Binance')
+        logging.info(MSG_RESET_TRADER_DATA.format('Binance',''))
 
     def on_message(self, ws, message):
         message = json.loads(message)
@@ -86,14 +87,13 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('Binance Trader----------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Binance','ticker',timestampToDate()))
         time.sleep(1)
-        logging.info('Restart Binance Trader Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Binance','ticker'))
         self.start()
 
     def start(self):
-        logging.info('Binance trader start')
+        logging.info(MSG_SOCKET_START.format('Binance','ticker'))
         url = 'wss://stream.binance.com:9443/stream?streams='
         for cp in self.currencypair:
             url += cp.lower() + '@depth/'

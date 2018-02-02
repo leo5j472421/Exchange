@@ -41,7 +41,6 @@ class Ticker:
         self.api = BittrexApi()
 
     def on_open(self, ws):
-        logging.info('init Bittrex\'s market Data')
         self.ws.subscribe('ticker')
         datas = self.api.get_market_summaries()
         if datas['success'] is True:
@@ -57,6 +56,7 @@ class Ticker:
                 ticker.formate(TickerData, pair[0], pair[1])
                 self.data.update({currencypair: ticker})
             self.isReady = True
+            logging.info(MSG_RESET_TICKER_DATA.format('Bittrex'))
 
 
     def on_error(self, ws, msg):
@@ -84,14 +84,12 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(' Bittrex Ticker ----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Bittrex','ticker',timestampToDate()))
         time.sleep(1)
-        logging.info('Restart Bittrex Ticker Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Bittrex','ticker'))
         self.start()
 
     def start(self):
-        logging.basicConfig(level=logging.INFO)
         self.ws = SignalR(on_open=self.on_open, on_message=self.on_message,
                           on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)

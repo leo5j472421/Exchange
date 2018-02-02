@@ -50,6 +50,7 @@ class Ticker:
         for cp in self.currencypair:
             self.resetTick(cp)
             ws.send(json.dumps({"sub": "market.{}.detail".format(cp), "id": "id10"}))
+        logging.info(MSG_RESET_TICKER_DATA.format('Huibo'))
         self.isReady = True
         # self.getTickerData()
         # logging.info('init huobi\'s market Data')
@@ -77,9 +78,9 @@ class Ticker:
                         callback(self.notice,cp)
         elif 'status' in message:
             if message['status'] == 'ok':
-                logging.info('subscript {} channel success'.format(message['subbed']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Huibo','ticker',message['subbed']))
             elif message['status'] == 'error':
-                logging.error( message['err-msg'] )
+                logging.error( message['err-msg'])
                 return
         elif 'ping' in message:
             self.ws.send(json.dumps({"pong": message['ping']}))
@@ -91,14 +92,14 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(' Huobi Ticker----------------------------CLOSE WebSocket-----------------------')
+        logging.warning(MSG_SOCKET_CLOSE.format('Huibo','ticker',timestampToDate()))
         logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
         time.sleep(1)
-        logging.info('Restart Huobi Ticker Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Huibo','ticker'))
         self.start()
 
     def start(self):
-        logging.info('huobi tick start')
+        logging.info(MSG_SOCKET_START.format('Huibo','ticker'))
         self.ws = websocket.WebSocketApp('wss://api.huobi.pro/ws', on_open=self.on_open, on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)

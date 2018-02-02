@@ -63,7 +63,7 @@ class Trader:
             channel = channel.replace('USD', 'USDT')
         if 'result' in message['data'].keys():
             if message['data']['result']:
-                logging.info('success subscript {}\'s{} channel'.format(self.name, message['data']['channel']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(self.name,'trader', message['data']['channel']))
             else:
                 logging.error(message['data']['error_msg'])
         if channel in self.currencypair:
@@ -88,14 +88,13 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('{} Trade----------------------------CLOSE WebSocket-----------------------'.format(self.name))
-        logging.warning('Close Time : '.format(timestampToDate(time.time()-time.timezone, True)))
+        logging.warning(MSG_SOCKET_CLOSE.format(self.name,'trader',timestampToDate()))
         time.sleep(1)
-        logging.info('Restart {} Trade Socket'.format(self.name))
+        logging.info(MSG_SOCKET_RESTART.format(self.name,'trader'))
         self.start()
 
     def start(self):
-        logging.info('OKEx trader start')
+        logging.info(MSG_SOCKET_START.format(self.name,'trader'))
         self.ws = websocket.WebSocketApp('wss://real.okex.com:10441/websocket', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

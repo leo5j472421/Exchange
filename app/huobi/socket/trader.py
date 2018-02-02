@@ -78,7 +78,7 @@ class Trader:
                         callback(self.notice, cp)
         elif 'status' in message:
             if message['status'] == 'ok':
-                logging.info('subscript {} channel success'.format(message['subbed']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Huibo','trader',message['subbed']))
             elif message['status'] == 'error':
                 logging.error(message['err-msg'])
                 return
@@ -92,14 +92,13 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('Huobi Trader----------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time() - time.timezone , True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Huibo','trader',timestampToDate()))
         time.sleep(1)
-        logging.info('Restart Huobi Trader Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Huibo','trader'))
         self.start()
 
     def start(self):
-        logging.info('huobi trader start')
+        logging.info(MSG_SOCKET_START.format('Huibo','trader'))
         self.ws = websocket.WebSocketApp('wss://api.huobi.pro/ws', on_open=self.on_open, on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)

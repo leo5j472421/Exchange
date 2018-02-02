@@ -1,6 +1,7 @@
 import logging
 import cfscrape
 from signalr import Connection
+from message import *
 
 '''
 Websocket like SignalR
@@ -40,11 +41,9 @@ class SignalR(object):
         self.cps.append(cp)
         if channel == 'ticker':
             self.corehub.server.invoke('SubscribeToSummaryDeltas')
-            logging.info('Subscribe Bittrex\'s updateSummaryState')
         elif channel == 'trader':
             self.corehub.server.invoke('SubscribeToExchangeDeltas', cp)
             self.corehub.server.invoke('queryExchangeState', cp)
-            logging.info('Subscribe Bittrex\'s {} updateExchangeState '.format(cp))
 
     def close(self):
         self.keep_running = False
@@ -63,15 +62,14 @@ class SignalR(object):
         self.keep_running = True
 
         try:
-            logging.info('Trying to establish connection to Bittrex through https://socket-stage.bittrex.com/signalr')
             with cfscrape.create_scraper() as connection:
                 self.conn = Connection(None, connection)
             self.conn.received += self.r  #
             self.conn.url = 'https://socket-stage.bittrex.com/signalr'
             self.corehub = self.conn.register_hub('coreHub')
+            logging.info(MSG_TRY_TO_CONNECT.format('Bittrex',self.conn.url))
             self.conn.start()
-            logging.info(
-                'Connection to Bittrex established successfully through https://socket-stage.bittrex.com/signalr')
+            logging.info(MSG_CONNECT_SUCCESS.format('Bittrex',self.conn.url))
             self._callback(self.on_open)
 
             self.corehub.client.on('updateSummaryState', self.received)

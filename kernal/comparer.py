@@ -24,9 +24,9 @@ class Comparer:
         if currencyPair in self.noSupport:
             return
         elif not self.exchange1.ticker.isReady:
-            logging.warning('{}\'s ticker is not Ready '.format(self.exchange1))
+            logging.warning(MSG_TICKET_NOT_READY.format(self.exchange1))
         elif not self.exchange2.ticker.isReady:
-            logging.warning('{}\'s ticker is not Ready '.format(self.exchange2))
+            logging.warning(MSG_TICKET_NOT_READY.format(self.exchange2))
         else:
             nowtime = timestampToDate(time.time() - time.timezone)
             try:
@@ -37,11 +37,9 @@ class Comparer:
                                                                          nowtime))
             except KeyError:
                 if currencyPair not in self.exchange1.ticker.data:
-                    logging.warning('{} ticker is not support {} currency pair or not init yet'.format(self.exchange1,
-                                                                                                       currencyPair))
+                    logging.warning(MSG_NOT_SUPPORT_CURRENCY_PAIR.format(self.exchange1,currencyPair))
                 else:
-                    logging.warning('{} ticker is not support {} currency pair or not init yet '.format(self.exchange2,
-                                                                                                        currencyPair))
+                    logging.warning(MSG_NOT_SUPPORT_CURRENCY_PAIR.format(self.exchange2,currencyPair))
                 self.noSupport.append(currencyPair)
 
     def tradercompare(self, currencyPair):
@@ -49,9 +47,9 @@ class Comparer:
             return
         try:
             if not self.exchange1.trader.isReady:
-                logging.warning('{}\'s trader is not Ready '.format(self.exchange1))
+                logging.warning(MSG_TRADER_NOT_READY.format(self.exchange1))
             elif not self.exchange2.trader.isReady:
-                logging.warning('{}\'s trader is not Ready '.format(self.exchange2))
+                logging.warning(MSG_TRADER_NOT_READY.format(self.exchange2))
             else:
                 askslow1 = min(list(map(float, self.exchange1.trader.data[currencyPair].asks.keys())))
                 bidshigh1 = max(list(map(float, self.exchange1.trader.data[currencyPair].bids.keys())))
@@ -63,13 +61,12 @@ class Comparer:
         except ValueError:
             if len(self.exchange1.trader.data[currencyPair].asks) == 0:
                 logging.warning(
-                    '{} trader is not support {} currency pair or not init yet'.format(self.exchange1, currencyPair))
+                    MSG_NOT_SUPPORT_CURRENCY_PAIR.format(self.exchange1, currencyPair))
             else:
                 logging.warning(
-                    '{} trader is not support {} currency pair or not init yet'.format(self.exchange2, currencyPair))
-            # self.noSupport.append(currencyPair) # Init secquence bug
+                    MSG_NOT_SUPPORT_CURRENCY_PAIR.format(self.exchange2, currencyPair))
+            # self.noSupport.append(currencyPair) # Init sequence bug
 
     def start(self):
-        logging.info('compare start')
         self.t1.start()
         self.t2.start()

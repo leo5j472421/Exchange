@@ -53,13 +53,14 @@ class Ticker:
         for cp in self.currencypair.values():
             self.resetTicker(cp)
             ws.send(json.dumps({'event': 'subscribe', 'channel': 'ticker', 'symbol': cp.replace('USDT', 'USD').replace('_','' ) }))
+        logging.info(MSG_RESET_TICKER_DATA.format('Bitfinex'))
         self.isReady = True
 
     def on_message(self, ws, message):
         message = json.loads(message)
         if type(message) is dict:
             if message['event'] == 'subscribed':
-                logging.info('success subscribed Bitfinex\'s {} ticker channel'.format(message['pair']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Bifinex','ticker',message['pair']))
                 self.channelId.update({str(message['chanId']): self.currencypair[message['pair']]})
             elif message['event'] == 'error':
                 logging.error(message)
@@ -85,19 +86,16 @@ class Ticker:
         logging.error(message)
         self.isReady = False
         time.sleep(1)
-        logging.info('Restart  Bitfinex Ticker Socket')
-        self.start()
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(' Bitfinex Ticker----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Bitfinex','ticker',timestampToDate()))
         time.sleep(1)
-        logging.info('Restart Bitfinex Ticker Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Bitfinex','ticker'))
         self.start()
 
     def start(self):
-        logging.info('Bitfinex tick start')
+        logging.info(MSG_SOCKET_START.format('Bitfinex','ticker'))
         self.ws = websocket.WebSocketApp('wss://api.bitfinex.com/ws/2', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

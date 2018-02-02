@@ -1,8 +1,9 @@
 import json
 import time,logging
+from message import *
 
 
-def timestampToDate(timestamp, combine=True):
+def timestampToDate(timestamp=time.time()-time.timezone, combine=True):
     timestamp = int(timestamp)
     if combine:
         return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(timestamp))

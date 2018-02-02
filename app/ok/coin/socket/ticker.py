@@ -45,7 +45,7 @@ class Ticker(exTicker):
 
     def start(self):
         logging.basicConfig(level=logging.INFO)
-        logging.info('OKCoin tick start')
+        logging.info(MSG_SOCKET_START.format(self.name,'trader'))
         self.ws = websocket.WebSocketApp('wss://real.okcoin.com:10440/websocket', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

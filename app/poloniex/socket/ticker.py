@@ -76,7 +76,7 @@ class Ticker:
     def on_open(self, ws):
         self.isReady = False
         self.getTickerData()
-        logging.info('poloniex init market Data')
+        logging.info(MSG_RESET_TICKER_DATA.format('Poloniex'))
         ws.send(json.dumps({'command': 'subscribe', 'channel': 1002}))
 
     def on_message(self, ws, message):
@@ -86,7 +86,7 @@ class Ticker:
             return
         if message[0] == 1002:
             if message[1] == 1:
-                logging.info('success subscript channel {} '.format(str(message[0])))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Poloniex', 'ticker', str(message[0])))
                 return
             message[2][0] = reserve(self.cps[str(message[2][0])])
             data = message[2]
@@ -100,16 +100,15 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('Poloniex Ticker----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time() - time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Poloniex','ticker',timestampToDate(time.time()-time.timezone)))
         time.sleep(1)
-        logging.info('Restart Poloniex Ticker Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Poloniex','ticker'))
         self.start()
 
     def start(self):
-        logging.info('poloniex tick start')
+        logging.info(MSG_SOCKET_START.format('Poloniex','ticker'))
         self.ws = websocket.WebSocketApp('wss://api2.poloniex.com:443', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
-        self.thread = Thread(target=self.ws.run_forever, kwargs={'sslopt': {"cert_reqs": ssl.CERT_NONE}})
+        self.thread = Thread(target=self.ws.run_forever)
         self.thread.start()

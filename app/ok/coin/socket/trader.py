@@ -44,7 +44,7 @@ class Trader(exTrader):
             ws.send(json.dumps( {'event':'addChannel','channel':'ok_sub_spot_{}_depth'.format(cp.replace('USDT','USD'))}))
 
     def start(self):
-        logging.info('OKCoin trader start')
+        logging.info(MSG_SOCKET_START.format(self.name,'trader'))
         self.ws = websocket.WebSocketApp('wss://real.okcoin.com:10440/websocket', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

@@ -11,7 +11,7 @@ comparer = Comparer(currencypair=[ 'BTC_USDT','LTC_USDT','ETH_USDT' ],targe=[ 'B
 comparer.start()
 
 logging.basicConfig(level=logging.INFO)
-p = Binance(currencypair=['ETH_USDT' ],targe=['BTC_USDT','LTC_USDT','ETH_USDT'])
+p = Poloniex(currencypair=['ETH_USDT' ],targe=['BTC_USDT','LTC_USDT','ETH_USDT'])
 
 def tradeTest(cp):
     askslow1 = min(list(map(float, p.trader.data[cp].asks.keys())))
@@ -23,7 +23,7 @@ def tickerTest(cp):
         p.ticker.data[cp].price)))
 
 p.setTickerCompare(tickerTest)
-p.setTraderCompare(tradeTest)
+#p.setTraderCompare(tradeTest)
 #p.trader.start()
 
 

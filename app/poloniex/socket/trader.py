@@ -2,9 +2,9 @@ from threading import Thread
 
 import websocket
 
-from ..function import *
 from model.trader import Trader as td
 from model.traders import Traders
+from ..function import *
 from ..polonixeApi import PoloniexApi
 
 '''
@@ -55,11 +55,11 @@ class Trader:
             cp = reserve(self.cps[str(message[0])])
             for i in message[2]:
                 if i[0] == 'o':
-                    if i[1] == 0 : #asks
-                        trades['asks'].append(td(float(i[2]),float(i[3])))
-                    else: #bids
-                        trades['bids'].append(td(float(i[2]),float(i[3])))
-            self.data[cp].formate(trades,'Poloniex')
+                    if i[1] == 0:  # asks
+                        trades['asks'].append(td(float(i[2]), float(i[3])))
+                    else:  # bids
+                        trades['bids'].append(td(float(i[2]), float(i[3])))
+            self.data[cp].formate(trades, 'Poloniex')
             Min = min(list(map(float, self.data[cp].asks.keys())))
             Max = max(list(map(float, self.data[cp].bids.keys())))
             if cp in self.targe:
@@ -70,21 +70,21 @@ class Trader:
         elif message[0] < 1000:  # First msg ( all order book data )
             cp = reserve(self.cps[str(message[0])])
             if message[2][0][0] == 'i':
-                logging.info('success subscript channel {} '.format(reserve(cp)))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Poloniex', 'trader', reserve(cp)))
                 self.marketChannel.append(message[0])
                 data = message[2][0][1]['orderBook']
-                logging.info('Init {}\'s Order Book Data: {}'.format(cp, str(len(data[0]) + len(data[1]))))
                 trades = {'asks': [], 'bids': []}
                 for a in [0, 1]:
                     side = 'asks' if a == 0 else 'bids'
                     for rate in data[a]:
-                        if side == 'asks' :
-                            trades['asks'].append(td(float(rate),float(data[a][rate])))
+                        if side == 'asks':
+                            trades['asks'].append(td(float(rate), float(data[a][rate])))
                         else:
-                            trades['bids'].append(td(float(rate),float(data[a][rate])))
-                self.data[cp].formate(trades,'Poloniex')
+                            trades['bids'].append(td(float(rate), float(data[a][rate])))
+                self.data[cp].formate(trades, 'Poloniex')
                 self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
                 self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
+                logging.info(MSG_RESET_TRADER_DATA.format('Poloniex', cp))
                 self.isReady = True
                 if cp in self.targe:
                     callback(self.notice, cp)
@@ -95,14 +95,13 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('Poloniex Trader----------------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Poloniex', 'trader', timestampToDate(time.time() - time.timezone)))
         time.sleep(1)
-        logging.info('Restart Poloniex Trader Socket')
-        # self.start()
+        logging.info(MSG_SOCKET_RESTART.format('Poloniex', 'trader'))
+        self.start()
 
     def start(self):
-        logging.info('poloniex trader start')
+        logging.info(MSG_SOCKET_START.format('Poloniex', 'trader'))
         self.ws = websocket.WebSocketApp('wss://api2.poloniex.com/', on_open=self.on_open, on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)

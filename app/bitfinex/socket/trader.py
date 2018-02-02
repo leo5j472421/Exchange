@@ -69,6 +69,7 @@ class Trader:
                     else:  # bids
                         trades['bids'].append(td(float(data[0]), float(abs(data[2]))))
                 self.data[cp].formate(trades,'Bitfine')
+                logging.info(MSG_RESET_TRADER_DATA.format('Bitfinex',cp))
             else:  # realtime data
                 trade = td(float(message[1][0]), float(abs(message[1][2])))
                 if message[1][1] == 0: # remove order
@@ -100,14 +101,13 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning('Bitfinex Trader----------------------CLOSE WebSocket-----------------------')
-        logging.warning('Close Time : ' + timestampToDate(time.time()-time.timezone, True))
+        logging.warning(MSG_SOCKET_CLOSE.format('Bitfinex','trader',timestampToDate()))
         time.sleep(1)
-        logging.info('Restart Bitfinex Trader Socket')
+        logging.info(MSG_SOCKET_RESTART.format('Bitfinex','ticker'))
         self.start()
 
     def start(self):
-        logging.info('Bitfinex trader start')
+        logging.info(MSG_SOCKET_START.format('Bitfinex','trader'))
         self.ws = websocket.WebSocketApp('wss://api.bitfinex.com/ws/2', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
