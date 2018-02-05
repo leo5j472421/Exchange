@@ -1,8 +1,9 @@
+from threading import Thread
+
 from model.trader import Trader as td
 from model.traders import Traders
 from .signalR import SignalR
 from ..bittrexApi import BittrexApi
-from threading import Thread
 from ..function import *
 
 '''
@@ -72,8 +73,9 @@ from ..function import *
 
 '''
 
+
 class Trader:
-    def __init__(self, currencypair=['BTC_USDT', 'ETH_USDT'],targe=['BTC_USDT'],notice=None):
+    def __init__(self, currencypair=['BTC_USDT', 'ETH_USDT'], targe=['BTC_USDT'], notice=None):
         self.data = {}
         self.isReady = False
         self.currencypair = currencypair
@@ -82,6 +84,7 @@ class Trader:
         self.caller = BittrexApi()
         self.targe = targe
         self.notice = notice
+        self.restart = True
 
     def on_open(self, ws):
         for cp in self.currencypair:
@@ -90,11 +93,12 @@ class Trader:
     def on_error(self, ws, msg):
         self.isReady = False
         logging.error(msg)
+
     def on_message(self, ws, message):
         if 'R' in message:
             message = message['R']
             cp = reserve(message['MarketName'])
-            logging.info('init Bittrex\'s {}  OrderBook '.format(cp))
+            logging.info(MSG_RESET_TRADER_DATA.format(BITTREX, cp))
             trades = {'asks': [], 'bids': []}
             for sides in ['Sells', 'Buys']:
                 side = 'asks' if sides == 'Sells' else 'bids'
@@ -104,11 +108,11 @@ class Trader:
                 else:
                     for a in message[sides]:
                         trades['bids'].append(td(a['Rate'], a['Quantity']))
-            self.data[cp].formate(trades,'Bittrex')
-            logging.info(MSG_RESET_TICKER_DATA.format('Bittrex',cp))
+            self.data[cp].formate(trades, BITTREX)
+            logging.info(MSG_RESET_TICKER_DATA.format(BITTREX, cp))
             self.isReady = True
             if cp in self.targe:
-                callback(self.notice,cp)
+                callback(self.notice, cp)
         else:
             trades = {'asks': [], 'bids': []}
             cp = reserve(message['MarketName'])
@@ -120,7 +124,7 @@ class Trader:
                 else:
                     for a in message[sides]:
                         trades['bids'].append(td(a['Rate'], a['Quantity']))
-            self.data[cp].formate(trades,'Bittrex')
+            self.data[cp].formate(trades, 'Bittrex')
             self.isReady = True
             Min = min(list(map(float, self.data[cp].asks.keys())))
             Max = max(list(map(float, self.data[cp].bids.keys())))
@@ -132,10 +136,11 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Bittrex','trader',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Bittrex','trader'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(BITTREX, 'trader', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(BITTREX, 'trader'))
+            self.start()
 
     def start(self):
         self.ws = SignalR(on_open=self.on_open, on_message=self.on_message,

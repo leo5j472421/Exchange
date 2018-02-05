@@ -47,6 +47,7 @@ class Ticker:
         self.notice = notice
         self.targe = targe
         self.channelId = {}
+        self.restart = True
 
     def resetTick(self):
         data = json.loads(requests.get('https://api.binance.com/api/v1/ticker/24hr').text)  # reset ticker
@@ -66,7 +67,7 @@ class Ticker:
 
     def on_open(self, ws):
         self.resetTick()
-        logging.info(MSG_RESET_TICKER_DATA.format('Binance'))
+        logging.info(MSG_RESET_TICKER_DATA.format(BINANCE))
         self.isReady = True
 
     def on_message(self, ws, message):
@@ -102,13 +103,14 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Binance', 'ticker', timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Binance', 'ticker'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(BINANCE, 'ticker', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(BINANCE, 'ticker'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format('Binance', 'ticker'))
+        logging.info(MSG_SOCKET_START.format(BINANCE, 'ticker'))
         self.ws = websocket.WebSocketApp('wss://stream.binance.com:9443/ws/!ticker@arr', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

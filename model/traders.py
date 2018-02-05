@@ -1,4 +1,5 @@
 import logging
+from constant import *
 
 class Traders:
     def __init__(self):
@@ -17,7 +18,7 @@ class Traders:
                           self.total[0] -= self.asks[str(trade.rate)].amount
                           self.asks.pop(str(trade.rate))
                         else :
-                            logging.warning( '{} is not in {}\'s order book list '.format(str(trade.rate),name))
+                            logging.warning( MSG_RATE_NOT_IN_ORDER_BOOK.format(str(trade.rate),name))
                     elif str(trade.rate) in self.asks : # modify
                         self.total[0] -= self.asks[str(trade.rate)].amount
                         self.total[0] += trade.amount
@@ -32,7 +33,7 @@ class Traders:
                           self.total[1] -= self.bids[str(trade.rate)].total
                           self.bids.pop(str(trade.rate))
                         else :
-                            logging.warning( '{} is not in {}\'s order book list '.format(str(trade.rate),name))
+                            logging.warning( MSG_RATE_NOT_IN_ORDER_BOOK.format(str(trade.rate),name))
                     elif str(trade.rate) in self.bids : # modify
                         self.total[1] -= self.bids[str(trade.rate)].total
                         self.total[1] += trade.total

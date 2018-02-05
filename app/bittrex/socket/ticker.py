@@ -1,10 +1,10 @@
-
-from .signalR import SignalR
-from model.ticker import Ticker as t
-from app.bittrex.function import *
-from ..bittrexApi import BittrexApi
-from threading import Thread
 import time
+from threading import Thread
+
+from app.bittrex.function import *
+from model.ticker import Ticker as t
+from .signalR import SignalR
+from ..bittrexApi import BittrexApi
 
 '''
 {
@@ -31,6 +31,7 @@ import time
 }
 '''
 
+
 class Ticker:
     def __init__(self, notice=None, targe=['BTC_USDT']):
         self.data = {}
@@ -39,6 +40,7 @@ class Ticker:
         self.targe = targe
         self.lastTime = time.time()
         self.api = BittrexApi()
+        self.restart = True
 
     def on_open(self, ws):
         self.ws.subscribe('ticker')
@@ -47,21 +49,21 @@ class Ticker:
             for data in datas['result']:
                 currencypair = reserve(data['MarketName'])
                 pair = currencypair
-                TickerData={
-                    'price' : data['Last'],
-                    'baseVolume' : data['Volume'],
-                    'TimeStamp' : data['TimeStamp']
+                TickerData = {
+                    'price': data['Last'],
+                    'baseVolume': data['Volume'],
+                    'TimeStamp': data['TimeStamp']
                 }
                 ticker = t()
                 ticker.formate(TickerData, pair[0], pair[1])
                 self.data.update({currencypair: ticker})
             self.isReady = True
-            logging.info(MSG_RESET_TICKER_DATA.format('Bittrex'))
-
+            logging.info(MSG_RESET_TICKER_DATA.format(BITTREX))
 
     def on_error(self, ws, msg):
         self.isReady = False
         logging.error(msg)
+
     def on_message(self, ws, message):
         for data in message['Deltas']:
             cp = reserve(data['MarketName'])
@@ -84,10 +86,11 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Bittrex','ticker',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Bittrex','ticker'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(BITTREX, 'ticker', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(BITTREX, 'ticker'))
+            self.start()
 
     def start(self):
         self.ws = SignalR(on_open=self.on_open, on_message=self.on_message,

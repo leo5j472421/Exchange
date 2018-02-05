@@ -1,7 +1,7 @@
 import logging
 import cfscrape
 from signalr import Connection
-from message import *
+from constant import *
 
 '''
 Websocket like SignalR

@@ -1,5 +1,5 @@
-from .socket.ticker import Ticker
-from .socket.trader import Trader
+from .socket.ticker import *
+from .socket.trader import *
 class Binance:
     def __init__(self,currencypair=['BTC_USDT','ETH_USDT'],targe=['BTC_USDT']):
         self.ticker = Ticker(currencypair=currencypair,targe=targe)
@@ -12,7 +12,7 @@ class Binance:
         self.trader.currencypair = currencypair
 
     def __str__(self):
-        return 'Binance'
+        return BINANCE
 
     def start(self):
         self.ticker.start()

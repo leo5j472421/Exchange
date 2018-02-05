@@ -31,6 +31,7 @@ class Trader:
         self.targe = targe
         self.notice = notice
         self.caller = PoloniexApi()
+        self.restart = True
         self.ids = {}
         self.cps = {}
 
@@ -59,7 +60,7 @@ class Trader:
                         trades['asks'].append(td(float(i[2]), float(i[3])))
                     else:  # bids
                         trades['bids'].append(td(float(i[2]), float(i[3])))
-            self.data[cp].formate(trades, 'Poloniex')
+            self.data[cp].formate(trades, POLONIEX)
             Min = min(list(map(float, self.data[cp].asks.keys())))
             Max = max(list(map(float, self.data[cp].bids.keys())))
             if cp in self.targe:
@@ -70,7 +71,7 @@ class Trader:
         elif message[0] < 1000:  # First msg ( all order book data )
             cp = reserve(self.cps[str(message[0])])
             if message[2][0][0] == 'i':
-                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Poloniex', 'trader', reserve(cp)))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(POLONIEX, 'trader', reserve(cp)))
                 self.marketChannel.append(message[0])
                 data = message[2][0][1]['orderBook']
                 trades = {'asks': [], 'bids': []}
@@ -81,10 +82,10 @@ class Trader:
                             trades['asks'].append(td(float(rate), float(data[a][rate])))
                         else:
                             trades['bids'].append(td(float(rate), float(data[a][rate])))
-                self.data[cp].formate(trades, 'Poloniex')
+                self.data[cp].formate(trades, POLONIEX)
                 self.data[cp].lastAsksLow = min(list(map(float, self.data[cp].asks.keys())))
                 self.data[cp].lastBidsHigh = max(list(map(float, self.data[cp].bids.keys())))
-                logging.info(MSG_RESET_TRADER_DATA.format('Poloniex', cp))
+                logging.info(MSG_RESET_TRADER_DATA.format(POLONIEX, cp))
                 self.isReady = True
                 if cp in self.targe:
                     callback(self.notice, cp)
@@ -95,13 +96,14 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Poloniex', 'trader', timestampToDate(time.time() - time.timezone)))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Poloniex', 'trader'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(POLONIEX, 'trader', timestampToDate(time.time() - time.timezone)))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(POLONIEX, 'trader'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format('Poloniex', 'trader'))
+        logging.info(MSG_SOCKET_START.format(POLONIEX, 'trader'))
         self.ws = websocket.WebSocketApp('wss://api2.poloniex.com/', on_open=self.on_open, on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)

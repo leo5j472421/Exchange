@@ -1,5 +1,6 @@
-from .socket.ticker import Ticker
-from .socket.trader import Trader
+from .socket.ticker import *
+from .socket.trader import *
+
 class Huobi:
     def __init__(self,currencypair=['BTC_USDT'],targe=['BTC_USDT']):
         self.ticker = Ticker(currencypair=currencypair,targe=targe)
@@ -12,7 +13,7 @@ class Huobi:
         self.trader.currencypair = currencypair
 
     def __str__(self):
-        return 'Huobi'
+        return HUOBI
 
     def start(self):
         self.ticker.start()

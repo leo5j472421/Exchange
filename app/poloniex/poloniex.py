@@ -1,6 +1,7 @@
 from .polonixeApi import PoloniexApi
-from .socket.ticker import Ticker
-from .socket.trader import Trader
+from .socket.ticker import *
+from .socket.trader import *
+
 
 
 class Poloniex:
@@ -18,7 +19,7 @@ class Poloniex:
         self.ticker.start()
         self.trader.start()
     def __str__(self):
-        return 'Poloniex'
+        return POLONIEX
 
     def setTickerCompare(self, function ):
         self.ticker.notice = function

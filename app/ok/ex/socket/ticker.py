@@ -1,8 +1,8 @@
 from threading import Thread
 
+import requests
 import websocket
 
-import requests
 from function import *
 from model.ticker import Ticker as t
 
@@ -36,46 +36,44 @@ class Ticker:
         self.notice = notice
         self.targe = targe
         self.lastTime = time.time()
-        self.name = 'OKEx'
+        self.name = OKEX
+        self.restart = True
 
     def on_open(self, ws):
         self.lastTime = time.time()
         for cp in self.currencypair:
-            ws.send(json.dumps({'event':'addChannel','channel':'ok_sub_spot_{}_ticker'.format(cp)}))
+            ws.send(json.dumps({'event': 'addChannel', 'channel': 'ok_sub_spot_{}_ticker'.format(cp)}))
             self.resetTicker(cp)
         MSG_RESET_TICKER_DATA.format(self.name)
         self.isReady = True
 
-
     def resetTicker(self, cp):
         pair = cp.split('_')
-        if self.name == 'OKCoin' :
-            cp = cp.replace('USDT','USD' )
-        data = json.loads(requests.get('https://www.{}.com/api/v1/ticker.do?symbol={}'.format(self.name,cp)).text)
+        if self.name == OKCOIN :
+            cp = cp.replace('USDT', 'USD')
+        data = json.loads(requests.get('https://www.{}.com/api/v1/ticker.do?symbol={}'.format(self.name, cp)).text)
         if 'error_code' in data:
-             logging.error(data)
-        elif 'tick' in data or 'ticker' in data :
+            logging.error(data)
+        elif 'tick' in data or 'ticker' in data:
             ts = data['date']
             if 'tick' in data:
                 data = data['tick']
             else:
                 data = data['ticker']
             tickData = {
-                'price' : data['last'],
-                'baseVolume' : data['vol'],
-                'time' : ts
+                'price': data['last'],
+                'baseVolume': data['vol'],
+                'time': ts
             }
             tick = t()
-            tick.formate( tickData,pair[0],pair[1])
+            tick.formate(tickData, pair[0], pair[1])
             tick.lastprice = tick.price
 
-            if self.name == 'OKCoin':
+            if self.name == OKCOIN :
                 cp = cp.replace('USD', 'USDT')
-            self.data.update({cp:tick})
+            self.data.update({cp: tick})
             if cp in self.targe:
                 callback(self.notice, cp)
-
-
 
     def on_error(self, ws, message):
         logging.error(message)
@@ -91,23 +89,24 @@ class Ticker:
             self.lastTime = time.time()
         message = message[0]
         channel = message['channel'].replace('ok_sub_spot_', '').replace('_ticker', '')
-        if self.name is 'OKCoin':
-            channel = channel.replace('USD','USDT')
+        if self.name is OKCOIN :
+            channel = channel.replace('USD', 'USDT')
         cp = channel.upper()
         if 'result' in message['data'].keys():
             if message['data']['result']:
-                logging.info(MSG_SUBSCRIPT_SUCCESS.format(self.name,'ticker',message['data']['channel']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(self.name, 'ticker', message['data']['channel']))
             else:
                 logging.error(message['data']['error_msg'])
         elif channel in self.currencypair:
+            print('in')
             pair = channel.upper().split('_')
             data = message['data']
             tickData = {
-                'price' : data['last'],
-                'baseVolume' : data['vol'],
+                'price': data['last'],
+                'baseVolume': data['vol'],
             }
             tick = t()
-            tick.formate( tickData,pair[0],pair[1])
+            tick.formate(tickData, pair[0], pair[1])
             tick.lastprice = self.data[cp].price
             self.data.update({cp: tick})
             self.isReady = True
@@ -118,14 +117,15 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format(self.name,'ticker',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format(self.name,'ticker'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(self.name, 'ticker', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(self.name, 'ticker'))
+            self.start()
 
     def start(self):
         logging.basicConfig(level=logging.INFO)
-        logging.info(MSG_SOCKET_START.format(self.name,'ticker'))
+        logging.info(MSG_SOCKET_START.format(self.name, 'ticker'))
         self.ws = websocket.WebSocketApp('wss://real.okex.com:10441/websocket', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

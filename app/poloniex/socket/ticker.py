@@ -1,4 +1,3 @@
-import ssl
 from threading import Thread
 
 import websocket
@@ -37,6 +36,7 @@ class Ticker:
         self.ids = {}
         self.cps = {}
         self.targe = targe
+        self.restart = True
 
     def getTickerData(self):
         data = self.caller.returnTicker()  # call PoloniexApi Reset The ticker Data
@@ -76,7 +76,7 @@ class Ticker:
     def on_open(self, ws):
         self.isReady = False
         self.getTickerData()
-        logging.info(MSG_RESET_TICKER_DATA.format('Poloniex'))
+        logging.info(MSG_RESET_TICKER_DATA.format(POLONIEX))
         ws.send(json.dumps({'command': 'subscribe', 'channel': 1002}))
 
     def on_message(self, ws, message):
@@ -86,7 +86,7 @@ class Ticker:
             return
         if message[0] == 1002:
             if message[1] == 1:
-                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Poloniex', 'ticker', str(message[0])))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(POLONIEX, 'ticker', str(message[0])))
                 return
             message[2][0] = reserve(self.cps[str(message[2][0])])
             data = message[2]
@@ -100,13 +100,14 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Poloniex','ticker',timestampToDate(time.time()-time.timezone)))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Poloniex','ticker'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(POLONIEX, 'ticker', timestampToDate(time.time() - time.timezone)))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(POLONIEX, 'ticker'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format('Poloniex','ticker'))
+        logging.info(MSG_SOCKET_START.format('Poloniex', 'ticker'))
         self.ws = websocket.WebSocketApp('wss://api2.poloniex.com:443', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

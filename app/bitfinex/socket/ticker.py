@@ -24,6 +24,7 @@ from model.ticker import Ticker as t
 }
 '''
 
+
 class Ticker:
 
     def __init__(self, notice=None, currencypair=['BTC_USDT', 'ETH_USDT'], targe=['BTC_USDT']):
@@ -31,10 +32,11 @@ class Ticker:
         self.isReady = False
         self.currencypair = {}
         for a in currencypair:
-            self.currencypair.update({a.replace('_','').replace('USDT','USD'):a})
+            self.currencypair.update({a.replace('_', '').replace('USDT', 'USD'): a})
         self.notice = notice
         self.targe = targe
         self.channelId = {}
+        self.restart = True
 
     def resetTicker(self, cp):
         pair = cp.split('_')
@@ -42,8 +44,8 @@ class Ticker:
             'https://api.bitfinex.com/v1/pubticker/{}'.format(cp.replace('_', '').replace('USDT', 'USD'))).text)
         tickerData = {
             'price': data['last_price'],
-            'baseVolume' : data['volume'],
-            'time' : data['timestamp']
+            'baseVolume': data['volume'],
+            'time': data['timestamp']
         }
         tick = t()
         tick.formate(tickerData, pair[0], pair[1])
@@ -52,15 +54,16 @@ class Ticker:
     def on_open(self, ws):
         for cp in self.currencypair.values():
             self.resetTicker(cp)
-            ws.send(json.dumps({'event': 'subscribe', 'channel': 'ticker', 'symbol': cp.replace('USDT', 'USD').replace('_','' ) }))
-        logging.info(MSG_RESET_TICKER_DATA.format('Bitfinex'))
+            ws.send(json.dumps(
+                {'event': 'subscribe', 'channel': 'ticker', 'symbol': cp.replace('USDT', 'USD').replace('_', '')}))
+        logging.info(MSG_RESET_TICKER_DATA.format(BITFINEX))
         self.isReady = True
 
     def on_message(self, ws, message):
         message = json.loads(message)
         if type(message) is dict:
             if message['event'] == 'subscribed':
-                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Bifinex','ticker',message['pair']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(BITFINEX, 'ticker', message['pair']))
                 self.channelId.update({str(message['chanId']): self.currencypair[message['pair']]})
             elif message['event'] == 'error':
                 logging.error(message)
@@ -72,16 +75,17 @@ class Ticker:
             else:
                 d = message[1]
                 tickerdata = {
-                        'change': d[4],
-                        'price':d[6],
-                        'baseVolume': d[7]
-                        }
+                    'change': d[4],
+                    'price': d[6],
+                    'baseVolume': d[7]
+                }
                 tick = t()
-                tick.formate(tickerdata,pair[0],pair[1])
-                self.data.update({cp:tick})
+                tick.formate(tickerdata, pair[0], pair[1])
+                self.data.update({cp: tick})
                 self.isReady = True
                 if cp in self.targe:
-                    callback(self.notice,cp)
+                    callback(self.notice, cp)
+
     def on_error(self, ws, message):
         logging.error(message)
         self.isReady = False
@@ -89,13 +93,14 @@ class Ticker:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Bitfinex','ticker',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Bitfinex','ticker'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(BITFINEX, 'ticker', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(BITFINEX, 'ticker'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format('Bitfinex','ticker'))
+        logging.info(MSG_SOCKET_START.format(BITFINEX, 'ticker'))
         self.ws = websocket.WebSocketApp('wss://api.bitfinex.com/ws/2', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

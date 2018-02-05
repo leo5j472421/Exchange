@@ -1,9 +1,12 @@
+import logging
+from threading import Thread
+
+import gzip
+import websocket
+
+from function import *
 from model.trader import Trader as td
 from model.traders import Traders
-import websocket, gzip
-from threading import Thread
-from function import *
-import logging
 
 '''
 {                                              Huobi's OrderBook data will reset evey time when receive the new data from server
@@ -30,7 +33,7 @@ import logging
 
 
 class Trader:
-    def __init__(self, currencypair=['BTC_USDT'],targe=['BTC_USDT'],notice = None):
+    def __init__(self, currencypair=['BTC_USDT'], targe=['BTC_USDT'], notice=None):
         self.data = {}
         self.isReady = False
         self.currencypair = {}
@@ -40,8 +43,7 @@ class Trader:
             self.data.update({cp: Traders()})
         self.targe = targe
         self.notice = notice
-
-
+        self.restart = True
 
     def on_open(self, ws):
         self.isReady = False
@@ -51,7 +53,7 @@ class Trader:
     def on_message(self, ws, message):
         message = json.loads(gzip.decompress(message).decode('utf-8'))
         if 'tick' in message:
-            channel = message['ch'].replace('market.','').replace('.depth.step0','')
+            channel = message['ch'].replace('market.', '').replace('.depth.step0', '')
             if channel in self.currencypair:
                 cp = self.currencypair[channel]
                 tds = Traders()
@@ -64,10 +66,10 @@ class Trader:
                     else:
                         for a in data['bids']:
                             trades['bids'].append(td(a[0], a[1]))
-                tds.formate(trades,'Huibo')
+                tds.formate(trades, HUOBI)
                 tds.lastAsksLow = self.data[cp].lastAsksLow
                 tds.lastBidsHigh = self.data[cp].lastBidsHigh
-                self.data.update({cp:tds})
+                self.data.update({cp: tds})
                 self.isReady = True
                 Min = min(list(map(float, self.data[cp].asks.keys())))
                 Max = max(list(map(float, self.data[cp].bids.keys())))
@@ -78,7 +80,7 @@ class Trader:
                         callback(self.notice, cp)
         elif 'status' in message:
             if message['status'] == 'ok':
-                logging.info(MSG_SUBSCRIPT_SUCCESS.format('Huibo','trader',message['subbed']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(HUOBI, 'trader', message['subbed']))
             elif message['status'] == 'error':
                 logging.error(message['err-msg'])
                 return
@@ -92,13 +94,14 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Huibo','trader',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Huibo','trader'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(HUOBI, 'trader', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(HUOBI, 'trader'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format('Huibo','trader'))
+        logging.info(MSG_SOCKET_START.format(HUOBI, 'trader'))
         self.ws = websocket.WebSocketApp('wss://api.huobi.pro/ws', on_open=self.on_open, on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)
         self.thread = Thread(target=self.ws.run_forever)

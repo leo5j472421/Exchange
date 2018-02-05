@@ -38,12 +38,13 @@ class Trader:
         self.lastTime = time.time()
         self.targe = targe
         self.notice = notice
-        self.name = 'OKEx'
+        self.name = OKEX
+        self.restart = True
 
     def on_open(self, ws):
         self.isReady = False
         for cp in self.currencypair:
-            ws.send(json.dumps({'event':'addChannel','channel':'ok_sub_spot_{}_depth'.format(cp)}))
+            ws.send(json.dumps({'event': 'addChannel', 'channel': 'ok_sub_spot_{}_depth'.format(cp)}))
 
     def on_error(self, ws, message):
         logging.error(message)
@@ -59,23 +60,23 @@ class Trader:
             ws.send('{"event":"ping"}')
             self.lastTime = time.time()
         channel = message['channel'].replace('ok_sub_spot_', '').replace('_depth', '')
-        if self.name is 'OKCoin':
+        if self.name is OKCOIN :
             channel = channel.replace('USD', 'USDT')
         if 'result' in message['data'].keys():
             if message['data']['result']:
-                logging.info(MSG_SUBSCRIPT_SUCCESS.format(self.name,'trader', message['data']['channel']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(self.name, 'trader', message['data']['channel']))
             else:
                 logging.error(message['data']['error_msg'])
         if channel in self.currencypair:
             trades = {'asks': [], 'bids': []}
             for side in message['data']:
-                if side == 'asks' :
+                if side == 'asks':
                     for a in message['data']['asks']:
                         trades['asks'].append(td(float(a[0]), float(a[1])))
-                elif side == 'bids' :
+                elif side == 'bids':
                     for a in message['data']['bids']:
                         trades['bids'].append(td(float(a[0]), float(a[1])))
-            self.data[channel].formate(trades,self.name)
+            self.data[channel].formate(trades, self.name)
             self.isReady = True
             cp = channel
             Min = min(list(map(float, self.data[cp].asks.keys())))
@@ -88,13 +89,14 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format(self.name,'trader',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format(self.name,'trader'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(self.name, 'trader', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(self.name, 'trader'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format(self.name,'trader'))
+        logging.info(MSG_SOCKET_START.format(self.name, 'trader'))
         self.ws = websocket.WebSocketApp('wss://real.okex.com:10441/websocket', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

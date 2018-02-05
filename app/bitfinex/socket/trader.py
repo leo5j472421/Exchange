@@ -31,6 +31,7 @@ from model.traders import Traders
 
 '''
 
+
 class Trader:
     def __init__(self, currencypair=['BTC_USDT'], targe=['BTC_USDT'], notice=None):
         self.data = {}
@@ -42,49 +43,50 @@ class Trader:
         self.targe = targe
         self.notice = notice
         self.channelId = {}
+        self.restart = True
 
     def on_open(self, ws):
         self.isReady = False
         for cp in self.currencypair:
-            ws.send(json.dumps({'event': 'subscribe', 'channel': 'book' , 'symbol': cp.replace('USDT', 'USD').replace('_','' ) }))
+            ws.send(json.dumps(
+                {'event': 'subscribe', 'channel': 'book', 'symbol': cp.replace('USDT', 'USD').replace('_', '')}))
 
     def on_message(self, ws, message):
         message = json.loads(message)
         if type(message) is dict:
             if message['event'] == 'subscribed':
-                logging.info('success subscribed Bitfinex\'s {} order channel'.format(message['pair']))
+                logging.info(MSG_SUBSCRIPT_SUCCESS.format(BITFINEX, message['pair'], ''))
                 self.channelId.update({str(message['chanId']): self.currencypair[message['pair']]})
             elif message['event'] == 'error':
                 logging.error(message)
         elif self.channelId[str(message[0])] in self.currencypair.values():
             trades = {'asks': [], 'bids': []}
             cp = self.channelId[str(message[0])]
-            if message[1] == 'hb': # HeartBeat
+            if message[1] == 'hb':  # HeartBeat
                 return
             elif type(message[1][0]) is list:  # init orderbook data
                 for data in message[1]:
-                    trade = td(float(data[0]), float(abs(data[2])))
                     if data[2] < 0:  # asks
                         trades['asks'].append(td(float(data[0]), float(abs(data[2]))))
                     else:  # bids
                         trades['bids'].append(td(float(data[0]), float(abs(data[2]))))
-                self.data[cp].formate(trades,'Bitfine')
-                logging.info(MSG_RESET_TRADER_DATA.format('Bitfinex',cp))
+                self.data[cp].formate(trades, BITFINEX)
+                logging.info(MSG_RESET_TRADER_DATA.format(BITFINEX, cp))
             else:  # realtime data
                 trade = td(float(message[1][0]), float(abs(message[1][2])))
-                if message[1][1] == 0: # remove order
+                if message[1][1] == 0:  # remove order
                     if str(trade.rate) in self.data[cp].asks:
-                        trades['asks'].append(td(float(message[1][0]),0.0))
+                        trades['asks'].append(td(float(message[1][0]), 0.0))
                     elif str(trade.rate) in self.data[cp].bids:
-                        trades['bids'].append(td(float(message[1][0]),0.0))
+                        trades['bids'].append(td(float(message[1][0]), 0.0))
                     else:
-                        logging.warning('{} is not in the Bitfinex\'s Order Book '.format(str(trade.rate)))
+                        logging.warning(MSG_RATE_NOT_IN_ORDER_BOOK.format(str(trade.rate), BITFINEX))
                 elif message[1][2] < 0:  # asks
                     trades['asks'].append(td(float(message[1][0]), float(abs(message[1][2]))))
                 elif message[1][2] > 0:  # bids
                     trades['bids'].append(td(float(message[1][0]), float(abs(message[1][2]))))
 
-                self.data[cp].formate(trades,'Bitfinex')
+                self.data[cp].formate(trades, 'Bitfinex')
                 self.isReady = True
                 Min = min(list(map(float, self.data[cp].asks.keys())))
                 Max = max(list(map(float, self.data[cp].bids.keys())))
@@ -101,13 +103,14 @@ class Trader:
 
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Bitfinex','trader',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Bitfinex','ticker'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(BITFINEX, 'trader', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(BITFINEX, 'ticker'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format('Bitfinex','trader'))
+        logging.info(MSG_SOCKET_START.format(BITFINEX, 'trader'))
         self.ws = websocket.WebSocketApp('wss://api.bitfinex.com/ws/2', on_open=self.on_open,
                                          on_message=self.on_message,
                                          on_close=self.on_close, on_error=self.on_error)

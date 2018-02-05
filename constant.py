@@ -9,3 +9,15 @@ MSG_CONNECT_SUCCESS = 'Connection to {} established successfully through {}'
 MSG_TICKET_NOT_READY = '{}\'s ticket is not Ready '
 MSG_TRADER_NOT_READY = '{}\'s trader is not Ready '
 MSG_NOT_SUPPORT_CURRENCY_PAIR = '{} is not support {} currency pair'
+MSG_RATE_NOT_IN_ORDER_BOOK= '{} is not in {}\'s order book list '
+
+POLONIEX='Poloniex'
+HUOBI = 'Huobi'
+OKEX = 'Okex'
+OKCOIN = 'OkCoin'
+BITTREX = 'Bittrex'
+BITFINEX = 'Binfinex'
+BINANCE = 'Binance'
+
+EXCHANGES=[POLONIEX,HUOBI,OKEX,OKCOIN,BITTREX,BITFINEX,BINANCE]
+

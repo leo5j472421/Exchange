@@ -34,7 +34,8 @@ class Ticker(exTicker):
         self.notice = notice
         self.targe = targe
         self.lastTime = time.time()
-        self.name = 'OKCoin'
+        self.name = OKCOIN
+        self.restart = True
 
     def on_open(self, ws):
         self.lastTime = time.time()

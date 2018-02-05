@@ -1,12 +1,12 @@
-from .socket.ticker import Ticker
-from .socket.trader import Trader
+from .socket.ticker import *
+from .socket.trader import *
 class Bittrex:
     def __init__(self,currencypair=['BTC_USDT'],targe=['BTC_USDT']):
         self.ticker = Ticker(targe=targe)
         self.trader = Trader(currencypair=currencypair,targe=targe)
 
     def __str__(self):
-        return 'Bittrex'
+        return BITTREX
 
     def __call__(self, currencypair, targe):
         self.ticker.targe = targe

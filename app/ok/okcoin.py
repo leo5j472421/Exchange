@@ -1,12 +1,12 @@
-from app.ok.coin.socket.ticker import Ticker
-from app.ok.coin.socket.trader import Trader
+from app.ok.coin.socket.ticker import *
+from app.ok.coin.socket.trader import *
 class Okcoin:
     def __init__(self,currencypair=['BTC_USDT'],targe=['BTC_USDT']):
         self.ticker = Ticker(currencypair=currencypair,targe=targe)
         self.trader = Trader(currencypair=currencypair,targe=targe)
 
     def __str__(self):
-        return 'Okcoin'
+        return OKCOIN
 
     def __call__(self, currencypair, targe):
         self.ticker.targe = targe

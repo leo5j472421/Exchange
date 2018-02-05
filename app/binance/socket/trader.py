@@ -1,5 +1,9 @@
 from threading import Thread
-import websocket,ssl,requests,json
+
+import requests
+import ssl
+import websocket
+
 from function import *
 from model.trader import Trader as td
 from model.traders import Traders
@@ -29,6 +33,7 @@ from model.traders import Traders
 
 '''
 
+
 class Trader:
     def __init__(self, currencypair=['BTC_USDT,ETH_USDT'], targe=['BTC_USDT'], notice=None):
         self.data = {}
@@ -40,6 +45,7 @@ class Trader:
         self.targe = targe
         self.notice = notice
         self.channelId = {}
+        self.restart = True
 
     def on_open(self, ws):
         self.isReady = False
@@ -50,12 +56,12 @@ class Trader:
             for side in data:
                 if side == 'asks':
                     for order in data[side]:
-                        trades['asks'].append(td(float(order[0]),float(order[1])))
+                        trades['asks'].append(td(float(order[0]), float(order[1])))
                 elif side == 'bids':
                     for order in data[side]:
                         trades['bids'].append(td(float(order[0]), float(order[1])))
-            self.data[cp].formate(trades,'Binance')
-        logging.info(MSG_RESET_TRADER_DATA.format('Binance',''))
+            self.data[cp].formate(trades, BINANCE)
+        logging.info(MSG_RESET_TRADER_DATA.format(BINANCE, ''))
 
     def on_message(self, ws, message):
         message = json.loads(message)
@@ -69,7 +75,7 @@ class Trader:
             elif side == 'b':
                 for order in data[side]:
                     trades['bids'].append(td(float(order[0]), float(order[1])))
-        self.data[cp].formate(trades,'Binance')
+        self.data[cp].formate(trades, 'Binance')
         self.isReady = True
         Min = min(list(map(float, self.data[cp].asks.keys())))
         Max = max(list(map(float, self.data[cp].bids.keys())))
@@ -84,16 +90,16 @@ class Trader:
         self.isReady = False
         time.sleep(1)
 
-
     def on_close(self, ws):
         self.isReady = False
-        logging.warning(MSG_SOCKET_CLOSE.format('Binance','ticker',timestampToDate()))
-        time.sleep(1)
-        logging.info(MSG_SOCKET_RESTART.format('Binance','ticker'))
-        self.start()
+        logging.warning(MSG_SOCKET_CLOSE.format(BINANCE, 'ticker', timestampToDate()))
+        if self.restart:
+            time.sleep(1)
+            logging.info(MSG_SOCKET_RESTART.format(BINANCE, 'ticker'))
+            self.start()
 
     def start(self):
-        logging.info(MSG_SOCKET_START.format('Binance','ticker'))
+        logging.info(MSG_SOCKET_START.format(BINANCE, 'ticker'))
         url = 'wss://stream.binance.com:9443/stream?streams='
         for cp in self.currencypair:
             url += cp.lower() + '@depth/'

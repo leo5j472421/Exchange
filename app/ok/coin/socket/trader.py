@@ -35,7 +35,8 @@ class Trader(exTrader):
         self.lastTime = time.time()
         self.targe = targe
         self.notice = notice
-        self.name = 'OKCoin'
+        self.name = OKCOIN
+        self.restart = True
 
 
     def on_open(self, ws):
