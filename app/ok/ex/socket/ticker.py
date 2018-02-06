@@ -98,7 +98,6 @@ class Ticker:
             else:
                 logging.error(message['data']['error_msg'])
         elif channel in self.currencypair:
-            print('in')
             pair = channel.upper().split('_')
             data = message['data']
             tickData = {

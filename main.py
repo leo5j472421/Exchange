@@ -1,15 +1,16 @@
 from kernal.ui.ui import *
 import logging
-
+from app.poloniex.polonixeApi import PoloniexApi
 
 logging.basicConfig(level=logging.INFO)
+'''
 comparer = Comparer(currencypair=['BTC_USDT', 'LTC_USDT', 'ETH_USDT'], targe=['BTC_USDT', 'LTC_USDT', 'ETH_USDT'])
 #comparer.start()
 
 
 
 
-p = Okcoin(currencypair=['ETH_USDT' ],targe=['BTC_USDT','LTC_USDT','ETH_USDT'])
+p = Binance(currencypair=['ETH_USDT' ],targe=['BTC_USDT','LTC_USDT','ETH_USDT'])
 
 def tradeTest(cp):
     askslow1 = min(list(map(float, p.trader.data[cp].asks.keys())))
@@ -27,11 +28,12 @@ def tickerTest(cp):
 p.setTickerCompare(tickerTest)
 p.setTraderCompare(tradeTest)
 #p.ticker.start()
+'''
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.title('Exchange Compare')
     main = MainView(root)
     main.pack(side="top", fill="both", expand=True)
-    root.wm_geometry("400x400")
+    root.wm_geometry("1000x1000")
     root.mainloop()
