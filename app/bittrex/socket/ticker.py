@@ -52,7 +52,7 @@ class Ticker:
                 TickerData = {
                     'price': data['Last'],
                     'baseVolume': data['Volume'],
-                    'TimeStamp': data['TimeStamp']
+                    #'TimeStamp': data['TimeStamp']
                 }
                 ticker = t()
                 ticker.formate(TickerData, pair[0], pair[1])
@@ -72,7 +72,7 @@ class Ticker:
             TickerData = {
                 'price': data['Last'],
                 'baseVolume': data['Volume'],
-                'TimeStamp': data['TimeStamp']
+                #'TimeStamp': data['TimeStamp']
             }
             ticker.formate(TickerData, pair[0], pair[1])
             ticker.lastprice = self.data[cp].price

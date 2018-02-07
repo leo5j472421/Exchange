@@ -45,7 +45,7 @@ class Ticker:
         tickerData = {
             'price': data['last_price'],
             'baseVolume': data['volume'],
-            'time': float(data['timestamp'])/1000
+            #'time': float(data['timestamp'])/1000
         }
         tick = t()
         tick.formate(tickerData, pair[0], pair[1])

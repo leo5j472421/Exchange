@@ -1,11 +1,11 @@
-from kernal.ui.ui import *
 import logging
-from app.poloniex.polonixeApi import PoloniexApi
 
-logging.basicConfig(level=logging.INFO)
+from kernal.ui.ui import *
+
 '''
+logging.basicConfig(level=logging.INFO)
 comparer = Comparer(currencypair=['BTC_USDT', 'LTC_USDT', 'ETH_USDT'], targe=['BTC_USDT', 'LTC_USDT', 'ETH_USDT'])
-#comparer.start()
+comparer.start()
 
 
 
@@ -31,6 +31,7 @@ p.setTraderCompare(tradeTest)
 '''
 
 if __name__ == "__main__":
+    print('App Start Time : {}'.format(timestampToDate(int(time.time() - time.timezone))))
     root = tk.Tk()
     root.title('Exchange Compare')
     main = MainView(root)

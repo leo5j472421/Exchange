@@ -1,12 +1,15 @@
 import datetime
-import matplotlib
 import tkinter as tk
 from threading import Thread
 from tkinter import *
 
+import matplotlib
+
 matplotlib.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+
+
 from app.binance.binance import Binance
 from app.bitfinex.bitfinex import Bitfinex
 from app.bittrex.bittrex import Bittrex
@@ -57,7 +60,6 @@ class Changer(Comparer):
         self.page = page
 
     def tickerPrinter(self, currencyPair):
-        nowtime = timestampToDate(time.time() - time.timezone)
         page = self.page.pages[currencyPair][0]
         page.tradeHistory[str(self.exchange1)][currencyPair].append(
             [str(self.exchange1.ticker.data[currencyPair].price),
@@ -65,14 +67,18 @@ class Changer(Comparer):
         page.tradeHistory[str(self.exchange2)][currencyPair].append(
             [str(self.exchange2.ticker.data[currencyPair].price),
              datetime.datetime.fromtimestamp(int(time.time()) + time.timezone)])
-        if float(page.exchangeInfo[str(self.exchange1)]['price']['text']) < float(self.exchange1.ticker.data[currencyPair].price):
+        if float(page.exchangeInfo[str(self.exchange1)]['price']['text']) < float(
+                self.exchange1.ticker.data[currencyPair].price):
             page.exchangeInfo[str(self.exchange1)]['price']['fg'] = 'red'
-        elif float(page.exchangeInfo[str(self.exchange1)]['price']['text']) > float(self.exchange1.ticker.data[currencyPair].price):
+        elif float(page.exchangeInfo[str(self.exchange1)]['price']['text']) > float(
+                self.exchange1.ticker.data[currencyPair].price):
             page.exchangeInfo[str(self.exchange1)]['price']['fg'] = 'blue'
 
-        if float(page.exchangeInfo[str(self.exchange2)]['price']['text']) < float(self.exchange2.ticker.data[currencyPair].price):
+        if float(page.exchangeInfo[str(self.exchange2)]['price']['text']) < float(
+                self.exchange2.ticker.data[currencyPair].price):
             page.exchangeInfo[str(self.exchange2)]['price']['fg'] = 'red'
-        elif float(page.exchangeInfo[str(self.exchange2)]['price']['text']) > float(self.exchange2.ticker.data[currencyPair].price):
+        elif float(page.exchangeInfo[str(self.exchange2)]['price']['text']) > float(
+                self.exchange2.ticker.data[currencyPair].price):
             page.exchangeInfo[str(self.exchange2)]['price']['fg'] = 'blue'
 
         page.exchangeInfo[str(self.exchange1)]['price']['text'] = str(self.exchange1.ticker.data[currencyPair].price)
@@ -87,7 +93,6 @@ class Changer(Comparer):
         bidshigh1 = max(list(map(float, self.exchange1.trader.data[currencyPair].bids.keys())))
         askslow2 = min(list(map(float, self.exchange2.trader.data[currencyPair].asks.keys())))
         bidshigh2 = max(list(map(float, self.exchange2.trader.data[currencyPair].bids.keys())))
-        nowtime = timestampToDate(time.time() - time.timezone)
 
         page = self.page.pages[currencyPair][0]
         page.exchangeInfo[str(self.exchange1)]['asks']['text'] = str(askslow1)
@@ -147,13 +152,14 @@ class PageCurrencypair(Page):
         kwargs.pop('exchanges')
         kwargs.pop('currencypair')
         kwargs.pop('tradeHistory')
+        self.fig = Figure()
+        self.p = self.fig.add_subplot(1, 1, 1)
         Page.__init__(self, *args, **kwargs)
         for index, exchange in enumerate(self.exchanges):
             lab = Label(self, text=exchange)
             labPrice = Label(self, text=0.0)
             labAsksHigh = Label(self, text=0.0)
             labBidsLow = Label(self, text=0.0)
-
             lab.grid(row=index * 3, column=0)
             Label(self, text='price').grid(row=index * 3 + 1, column=0)
             labPrice.grid(row=index * 3 + 1, column=1)
@@ -163,6 +169,9 @@ class PageCurrencypair(Page):
             labBidsLow.grid(row=index * 3 + 2, column=3)
             self.exchangeInfo.update({exchange: {'price': labPrice, 'asks': labAsksHigh, 'bids': labBidsLow}})
         self.plot()
+        self.canvas = FigureCanvasTkAgg(self.fig, self)
+        self.canvas.get_tk_widget().grid(row=6, column=1)
+        self.canvas.draw()
 
     def plot(self):
         history1 = self.tradeHistory[self.exchanges[0]][self.currencypair]
@@ -171,20 +180,23 @@ class PageCurrencypair(Page):
         y1 = [float(a[0]) for a in history1]
         x2 = [a[1] for a in history2]
         y2 = [float(a[0]) for a in history2]
-        fig = Figure(figsize=(6, 6))
-        a = fig.add_subplot(111)
-        a.plot(x1, y1)
-        a.plot(x2, y2, color='red')
-        a.set_title("{} Price".format(self.currencypair), fontsize=16)
-        a.set_ylabel("Price", fontsize=14)
-        a.set_xlabel("UTC Time", fontsize=14)
-        canvas = FigureCanvasTkAgg(fig, self)
-        canvas.get_tk_widget().grid(row=6, column=1)
-        canvas.draw()
+        self.p.clear()
+        # a = self.fig.add_subplot(111)
+        self.p.plot(x1, y1, 'b-', label=self.exchanges[0])
+        self.p.plot(x2, y2, 'r-', label=self.exchanges[1])
+        self.p.set_title("{} Price".format(self.currencypair), fontsize=16)
+        self.p.set_ylabel("Price", fontsize=14)
+        self.p.set_xlabel("UTC Time", fontsize=14)
+        self.p.legend()
+        try:
+            self.canvas.draw()
+        except:
+            pass
 
 
 class MainView(tk.Frame):
     def ClickStart(self, exchanges, pairs):
+
         self.tradeHistory = {exchanges[0]: {},
                              exchanges[1]: {}
                              }

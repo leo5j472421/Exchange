@@ -14,22 +14,8 @@ class Ticker:
         self.base = base
         self.quote = quote
         self.volume = float(data['baseVolume'])
+        self.timestramp = time.time()
         try :
-          self.change = float(data['change'])
-          self.timestramp = data['time']
-        except KeyError :
-            try:
-                dt = datetime.datetime.strptime(data['TimeStamp'], '%Y-%m-%dT%H:%M:%S.%f')
-                if time.daylight:
-                    ts = dt.timestamp() - time.altzone  # time zone problem
-                else:
-                    ts = dt.timestamp() - time.timezone  # time zone problem
-            except ValueError:
-                dt = datetime.datetime.strptime(data['TimeStamp'], '%Y-%m-%dT%H:%M:%S')
-                if time.daylight:
-                    ts = dt.timestamp() - time.altzone  # time zone problem
-                else:
-                    ts = dt.timestamp() - time.timezone  # time zone problem
-            except:
-                self.timestramp = time.time()
-            self.timestramp = time.time()
+            self.change = float(data['change'])
+        except:
+            self.change = None

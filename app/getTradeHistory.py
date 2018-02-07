@@ -13,7 +13,7 @@ def getTradeHistory(exchange, currencypair):
         pair = currencypair.split('_')
         data = json.loads(requests.get(
             'https://poloniex.com/public?command=returnTradeHistory&currencyPair={}&start={}'.format(
-                '{}_{}'.format(pair[1], pair[0]), str(datetime.datetime.now().timestamp() - 600))).text)
+                '{}_{}'.format(pair[1], pair[0]), str(datetime.datetime.now().timestamp() - 1500))).text)
         history = [[d['rate'], datetime.datetime.strptime(d['date'], '%Y-%m-%d %H:%M:%S')] for d in data]
     elif exchange == HUOBI:
         cp = currencypair.replace('_', '').lower()
@@ -44,7 +44,6 @@ def getTradeHistory(exchange, currencypair):
     elif exchange == BITFINEX:
         cp = currencypair.replace('USDT','USD').replace('_','')
         data = json.loads(requests.get('https://api.bitfinex.com/v2/trades/t{}/hist'.format(cp)).text)
-        print(data)
         history = [ [ d[3],datetime.datetime.fromtimestamp((float(d[1])/1000) + time.timezone ) ] for d in data ]
     elif exchange == BINANCE:
         data = json.loads(requests.get('https://api.binance.com/api/v1/trades?symbol={}'.format(currencypair.replace('_',''))).text)
@@ -58,8 +57,9 @@ def plot(history1,history2):
     x2 = [a[1] for a in history2]
     y2 = [float(a[0]) for a in history2]
     # plt.plot(xa,regr.coef_ * xa + regr.intercept_)
-    plt.plot(x1, y1)
-    plt.plot(x2,y2)
+    plt.plot(x1, y1,label=POLONIEX)
+    plt.plot(x2,y2,label=HUOBI)
+    plt.legend()
     # beautify the x-labels
     plt.gcf().autofmt_xdate()
     plt.show()
