@@ -98,7 +98,6 @@ class Trader:
         if 'R' in message:
             message = message['R']
             cp = reserve(message['MarketName'])
-            logging.info(MSG_RESET_TRADER_DATA.format(BITTREX, cp))
             trades = {'asks': [], 'bids': []}
             for sides in ['Sells', 'Buys']:
                 side = 'asks' if sides == 'Sells' else 'bids'
@@ -109,7 +108,7 @@ class Trader:
                     for a in message[sides]:
                         trades['bids'].append(td(a['Rate'], a['Quantity']))
             self.data[cp].formate(trades, BITTREX)
-            logging.info(MSG_RESET_TICKER_DATA.format(BITTREX, cp))
+            logging.info(MSG_RESET_TRADER_DATA.format(BITTREX, cp))
             self.isReady = True
             if cp in self.targe:
                 callback(self.notice, cp)

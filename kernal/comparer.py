@@ -1,5 +1,4 @@
 from threading import Thread
-
 from app.huobi.huobi import Huobi
 from app.poloniex.poloniex import Poloniex
 from function import *
@@ -43,7 +42,7 @@ class Comparer:
                     logging.warning(MSG_NOT_SUPPORT_CURRENCY_PAIR.format(self.exchange1, currencyPair))
                 else:
                     logging.warning(MSG_NOT_SUPPORT_CURRENCY_PAIR.format(self.exchange2, currencyPair))
-                #self.noSupport.append(currencyPair)
+                self.noSupport.append(currencyPair)
 
     def traderPrinter(self, currencyPair):
         askslow1 = min(list(map(float, self.exchange1.trader.data[currencyPair].asks.keys())))

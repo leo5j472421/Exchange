@@ -1,13 +1,5 @@
-import datetime
-import tkinter as tk
-from threading import Thread
-from tkinter import *
 
-import matplotlib
-
-matplotlib.use('TkAgg')
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
+from kernal.ui.page import *
 
 
 from app.binance.binance import Binance
@@ -17,8 +9,7 @@ from app.huobi.huobi import Huobi
 from app.ok.okcoin import Okcoin
 from app.ok.okex import Okex
 from app.poloniex.poloniex import Poloniex
-from function import *
-from kernal.comparer import Comparer
+from kernal.ui.changer import Changer
 from app.getTradeHistory import getTradeHistory
 
 
@@ -39,179 +30,35 @@ def getExchange(exchange):
         return Binance()
 
 
-pairs = ['BTC_USDT', 'ETH_USDT', 'LTC_USDT', 'ETH_BTC', 'LTC_BTC']
-
-
-class Changer(Comparer):
-    def __init__(self, exchange1=Poloniex(), exchange2=Huobi(), currencypair=['BTC_USDT'], targe=['BTC_USDT'],
-                 page=None):
-        logging.basicConfig(level=logging.INFO)
-        self.exchange1 = exchange1
-        self.exchange2 = exchange2
-        self.exchange1.__init__(currencypair, targe)
-        self.exchange2.__init__(currencypair, targe)
-        self.exchange1.setTickerCompare(self.tickerCompare)
-        self.exchange2.setTickerCompare(self.tickerCompare)
-        self.exchange1.setTraderCompare(self.traderCompare)
-        self.exchange2.setTraderCompare(self.traderCompare)
-        self.t1 = Thread(target=self.exchange1.start)
-        self.t2 = Thread(target=self.exchange2.start)
-        self.noSupport = []
-        self.page = page
-
-    def tickerPrinter(self, currencyPair):
-        page = self.page.pages[currencyPair][0]
-        page.tradeHistory[str(self.exchange1)][currencyPair].append(
-            [str(self.exchange1.ticker.data[currencyPair].price),
-             datetime.datetime.fromtimestamp(int(time.time()) + time.timezone)])
-        page.tradeHistory[str(self.exchange2)][currencyPair].append(
-            [str(self.exchange2.ticker.data[currencyPair].price),
-             datetime.datetime.fromtimestamp(int(time.time()) + time.timezone)])
-        if float(page.exchangeInfo[str(self.exchange1)]['price']['text']) < float(
-                self.exchange1.ticker.data[currencyPair].price):
-            page.exchangeInfo[str(self.exchange1)]['price']['fg'] = 'red'
-        elif float(page.exchangeInfo[str(self.exchange1)]['price']['text']) > float(
-                self.exchange1.ticker.data[currencyPair].price):
-            page.exchangeInfo[str(self.exchange1)]['price']['fg'] = 'blue'
-
-        if float(page.exchangeInfo[str(self.exchange2)]['price']['text']) < float(
-                self.exchange2.ticker.data[currencyPair].price):
-            page.exchangeInfo[str(self.exchange2)]['price']['fg'] = 'red'
-        elif float(page.exchangeInfo[str(self.exchange2)]['price']['text']) > float(
-                self.exchange2.ticker.data[currencyPair].price):
-            page.exchangeInfo[str(self.exchange2)]['price']['fg'] = 'blue'
-
-        page.exchangeInfo[str(self.exchange1)]['price']['text'] = str(self.exchange1.ticker.data[currencyPair].price)
-        page.exchangeInfo[str(self.exchange2)]['price']['text'] = str(self.exchange2.ticker.data[currencyPair].price)
-
-        if time.time() - page.time > 10:
-            page.time = time.time()
-            page.plot()
-
-    def traderPrinter(self, currencyPair):
-        askslow1 = min(list(map(float, self.exchange1.trader.data[currencyPair].asks.keys())))
-        bidshigh1 = max(list(map(float, self.exchange1.trader.data[currencyPair].bids.keys())))
-        askslow2 = min(list(map(float, self.exchange2.trader.data[currencyPair].asks.keys())))
-        bidshigh2 = max(list(map(float, self.exchange2.trader.data[currencyPair].bids.keys())))
-
-        page = self.page.pages[currencyPair][0]
-        page.exchangeInfo[str(self.exchange1)]['asks']['text'] = str(askslow1)
-        page.exchangeInfo[str(self.exchange1)]['bids']['text'] = str(bidshigh1)
-        page.exchangeInfo[str(self.exchange2)]['asks']['text'] = str(askslow2)
-        page.exchangeInfo[str(self.exchange2)]['bids']['text'] = str(bidshigh2)
-
-
-class Page(tk.Frame):
-    def __init__(self, *args, **kwargs):
-        tk.Frame.__init__(self, *args, **kwargs)
-
-    def show(self):
-        self.lift()
-
-
-class PageMain(Page):
-    def ClickStart(self):
-        selectIndex = list(self.lb_pair.curselection())
-        pairs = []
-        for index in selectIndex:
-            pairs.append(self.lb_pair.get(index))
-        callback(self.notice, [self.v1.get(), self.v2.get()], pairs)
-
-    def __init__(self, *args, **kwargs):
-        self.notice = kwargs['notice']
-        kwargs.pop('notice')
-        Page.__init__(self, *args, **kwargs)
-        self.v1 = StringVar(value=POLONIEX)
-        self.v2 = StringVar(value=HUOBI)
-        self.select1 = OptionMenu(self, self.v1, *EXCHANGES)
-        self.select2 = OptionMenu(self, self.v2, *EXCHANGES)
-        self.button1 = Button(self, text='Start', command=self.ClickStart)
-        self.labprice = Label(self, text='price')
-        self.lab1price = Label(self, text='0.0')
-        self.lab2price = Label(self, text='0.0')
-        self.lb_pair = Listbox(self, selectmode='multiple', exportselection=0)
-        for i, cp in enumerate(pairs):
-            self.lb_pair.insert(END, cp)
-
-        Label(self, text='Exchange1').grid(row=0, column=0)
-        self.select1.grid(row=0, column=1)
-        Label(self, text='Exchange2').grid(row=1, column=0)
-        self.select2.grid(row=1, column=1)
-        self.button1.grid(row=4, column=0, columnspan=2)
-        Label(self, text='Currency Pairs').grid(row=2, column=0)
-        self.lb_pair.grid(row=2, column=1)
-
-
-class PageCurrencypair(Page):
-    def __init__(self, *args, **kwargs):
-        self.exchanges = kwargs['exchanges']
-        self.currencypair = kwargs['currencypair']
-        self.tradeHistory = kwargs['tradeHistory']
-        self.exchangeInfo = {}
-        self.time = time.time()
-        kwargs.pop('exchanges')
-        kwargs.pop('currencypair')
-        kwargs.pop('tradeHistory')
-        self.fig = Figure()
-        self.p = self.fig.add_subplot(1, 1, 1)
-        Page.__init__(self, *args, **kwargs)
-        for index, exchange in enumerate(self.exchanges):
-            lab = Label(self, text=exchange)
-            labPrice = Label(self, text=0.0)
-            labAsksHigh = Label(self, text=0.0)
-            labBidsLow = Label(self, text=0.0)
-            lab.grid(row=index * 3, column=0)
-            Label(self, text='price').grid(row=index * 3 + 1, column=0)
-            labPrice.grid(row=index * 3 + 1, column=1)
-            Label(self, text='Asks High :').grid(row=index * 3 + 2, column=0)
-            labAsksHigh.grid(row=index * 3 + 2, column=1)
-            Label(self, text='Bids High :').grid(row=index * 3 + 2, column=2)
-            labBidsLow.grid(row=index * 3 + 2, column=3)
-            self.exchangeInfo.update({exchange: {'price': labPrice, 'asks': labAsksHigh, 'bids': labBidsLow}})
-        self.plot()
-        self.canvas = FigureCanvasTkAgg(self.fig, self)
-        self.canvas.get_tk_widget().grid(row=6, column=1)
-        self.canvas.draw()
-
-    def plot(self):
-        history1 = self.tradeHistory[self.exchanges[0]][self.currencypair]
-        history2 = self.tradeHistory[self.exchanges[1]][self.currencypair]
-        x1 = [a[1] for a in history1]
-        y1 = [float(a[0]) for a in history1]
-        x2 = [a[1] for a in history2]
-        y2 = [float(a[0]) for a in history2]
-        self.p.clear()
-        # a = self.fig.add_subplot(111)
-        self.p.plot(x1, y1, 'b-', label=self.exchanges[0])
-        self.p.plot(x2, y2, 'r-', label=self.exchanges[1])
-        self.p.set_title("{} Price".format(self.currencypair), fontsize=16)
-        self.p.set_ylabel("Price", fontsize=14)
-        self.p.set_xlabel("UTC Time", fontsize=14)
-        self.p.legend()
-        try:
-            self.canvas.draw()
-        except:
-            pass
-
 
 class MainView(tk.Frame):
+    def ClearPage(self):
+        for a in self.pages:
+            self.pages[a][0].destroy()
+            self.pages[a][1].destroy()
+        self.pages = {}
+
     def ClickStart(self, exchanges, pairs):
 
         self.tradeHistory = {exchanges[0]: {},
                              exchanges[1]: {}
                              }
-        for a in self.pages:
-            self.pages[a][0].destroy()
-            self.pages[a][1].destroy()
-        self.pages = {}
+        self.ClearPage()
         for pair in pairs:
             self.tradeHistory[exchanges[0]].update({pair: getTradeHistory(exchanges[0], pair)})
             self.tradeHistory[exchanges[1]].update({pair: getTradeHistory(exchanges[1], pair)})
-            page = PageCurrencypair(self, exchanges=exchanges, currencypair=pair, tradeHistory=self.tradeHistory)
-            page.place(in_=self.container, x=0, y=0, relwidth=1, relheight=1)
-            button = tk.Button(self.buttonframe, text=pair, command=page.lift)
-            button.pack(side="left")
-            self.pages.update({pair: [page, button]})
+            support = True
+            for a in self.tradeHistory:
+                if self.tradeHistory[a][pair] == None:
+                    # self.ClearPage()
+                    messagebox.showinfo('Alert', MSG_NOT_SUPPORT_CURRENCY_PAIR.format(a, pair))
+                    support = False
+            if support:
+                page = PageCurrencypair(self, exchanges=exchanges, currencypair=pair, tradeHistory=self.tradeHistory)
+                page.place(in_=self.container, x=0, y=0, relwidth=1, relheight=1)
+                button = tk.Button(self.buttonframe, text=pair, command=page.lift)
+                button.pack(side="left")
+                self.pages.update({pair: [page, button]})
         try:
             self.compare.close()
         except:
