@@ -59,7 +59,7 @@ class Ticker:
                     'price': tick['lastPrice'],
                     'change': float(tick['priceChange']) * 100,
                     'baseVolume': tick['volume'],
-                    #'time': float(tick['closeTime'])/1000
+                    'time': float(tick['closeTime'])/1000
                 }
                 tick = t()
                 tick.formate(tickerData, pair[0], pair[1])
@@ -80,7 +80,7 @@ class Ticker:
                     'price': data['c'],
                     'change': float(data['p']) * 100,
                     'baseVolume': data['v'],
-                    #'time': float(data['E'])/1000
+                    'time': float(data['E'])/1000
                 }
                 tick = t()
                 tick.formate(tickerData, pair[0], pair[1])

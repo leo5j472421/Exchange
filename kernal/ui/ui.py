@@ -9,6 +9,7 @@ from app.huobi.huobi import Huobi
 from app.ok.okcoin import Okcoin
 from app.ok.okex import Okex
 from app.poloniex.poloniex import Poloniex
+from app.zb.zb import Zb
 from kernal.ui.changer import Changer
 from app.getTradeHistory import getTradeHistory
 
@@ -28,6 +29,8 @@ def getExchange(exchange):
         return Bitfinex()
     elif exchange == BINANCE:
         return Binance()
+    elif exchange == ZB:
+        return Zb()
 
 
 

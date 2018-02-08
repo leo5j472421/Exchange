@@ -64,8 +64,6 @@ class PageCurrencypair(Page):
         kwargs.pop('exchanges')
         kwargs.pop('currencypair')
         kwargs.pop('tradeHistory')
-        self.fig = Figure()
-        self.p = self.fig.add_subplot(1, 1, 1)
         Page.__init__(self, *args, **kwargs)
         for index, exchange in enumerate(self.exchanges):
             lab = Label(self, text=exchange)
@@ -80,6 +78,8 @@ class PageCurrencypair(Page):
             Label(self, text='Bids High :').grid(row=index * 3 + 2, column=2)
             labBidsLow.grid(row=index * 3 + 2, column=3)
             self.exchangeInfo.update({exchange: {'price': labPrice, 'asks': labAsksHigh, 'bids': labBidsLow}})
+        self.fig = Figure()
+        self.p = self.fig.add_subplot(1, 1, 1)
         self.plot()
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.get_tk_widget().grid(row=6, column=1)

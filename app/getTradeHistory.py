@@ -15,7 +15,7 @@ def getTradeHistory(exchange, currencypair):
             pair = currencypair.split('_')
             data = json.loads(requests.get(
                 'https://poloniex.com/public?command=returnTradeHistory&currencyPair={}&start={}'.format(
-                    '{}_{}'.format(pair[1], pair[0]), str(datetime.datetime.now().timestamp() - 1500))).text)
+                    '{}_{}'.format(pair[1], pair[0]), str(datetime.datetime.now().timestamp() - 2400))).text)
             history = [[d['rate'], datetime.datetime.strptime(d['date'], '%Y-%m-%d %H:%M:%S')] for d in data]
         elif exchange == HUOBI:
             cp = currencypair.replace('_', '').lower()
@@ -56,6 +56,10 @@ def getTradeHistory(exchange, currencypair):
                 'https://api.binance.com/api/v1/trades?symbol={}'.format(currencypair.replace('_', ''))).text)
             history = [[d['price'], datetime.datetime.fromtimestamp(float((d['time']) / 1000) + time.timezone)] for d in
                        data]
+        elif exchange == ZB:
+            data = json.loads(requests.get('http://api.zb.com/data/v1/trades?market={}'.format(currencypair)).text)
+            history = [[d['price'], datetime.datetime.fromtimestamp(float(d['date']) + time.timezone)] for d in
+                       data]
     except :
         return None
     return sorted(history, key=lambda x: x[1])
@@ -74,5 +78,4 @@ def plot(history1, history2):
     plt.gcf().autofmt_xdate()
     plt.show()
 
-
-#plot(getTradeHistory(OKCOIN, 'ETH_BTC'), getTradeHistory(POLONIEX, 'BTC_USDT'))
+#plot(getTradeHistory(ZB, 'BTC_USDT'), getTradeHistory(POLONIEX, 'BTC_USDT'))
