@@ -5,7 +5,7 @@ import websocket
 from model.trader import Trader as td
 from model.traders import Traders
 from ..function import *
-from ..polonixeApi import PoloniexApi
+from ..api import Api
 
 '''
 [
@@ -30,7 +30,7 @@ class Trader:
         self.marketChannel = []
         self.targe = targe
         self.notice = notice
-        self.caller = PoloniexApi()
+        self.caller = Api()
         self.restart = True
         self.ids = {}
         self.cps = {}

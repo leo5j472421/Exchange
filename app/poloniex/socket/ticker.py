@@ -4,7 +4,7 @@ import websocket
 
 from model.ticker import Ticker as t
 from ..function import *
-from ..polonixeApi import PoloniexApi
+from ..api import Api
 
 '''
 Message format
@@ -31,7 +31,7 @@ class Ticker:
     def __init__(self, notice=None, targe=['BTC_USDT']):
         self.data = {}
         self.isReady = False
-        self.caller = PoloniexApi()
+        self.caller = Api()
         self.notice = notice
         self.ids = {}
         self.cps = {}

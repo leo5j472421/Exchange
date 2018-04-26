@@ -2,7 +2,9 @@ import json
 import time,logging
 from constant import *
 
-def timestampToDate(timestamp=time.time()-time.timezone, combine=True):
+def timestampToDate(timestamp=None, combine=True):
+    if timestamp == None:
+        timestamp = time.time() - time.timezone
     timestamp = int(timestamp)
     if combine:
         return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(timestamp))

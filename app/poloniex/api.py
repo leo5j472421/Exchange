@@ -7,10 +7,10 @@ def createTimeStamp(datestr, format="%Y-%m-%d %H:%M:%S"):
     return time.mktime(time.strptime(datestr, format))
 
 
-class PoloniexApi:
+class Api:
     def __init__(self):
-        self.APIKey = '1'
-        self.Secret = '2'
+        self.APIKey = '6YDJIYOJ-OEVKRO8Y-7Z48L7KA-85EKJLYF'
+        self.Secret = '4272b469a9603c7160b99988cc696014f0221d606c87284fd4dbeed3ccec69368775a8f77af1dea7bd17e2092679d9ae8522ab45eb0fd6a61755c1def8fa0e0d'.encode()
 
     def post_process(self, before):
         after = before
@@ -113,6 +113,9 @@ class PoloniexApi:
     # Outputs:
     # orderNumber   The order number
     def sell(self, currencyPair, rate, amount):
+        print(currencyPair)
+        print(rate)
+        print(amount)
         return self.api_query('sell', {"currencyPair": currencyPair, "rate": rate, "amount": amount})
 
     # Cancels an order you have placed in a given market. Required POST parameters are "currencyPair" and "orderNumber".

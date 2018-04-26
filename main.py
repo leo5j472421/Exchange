@@ -30,7 +30,6 @@ p.setTraderCompare(tradeTest)
 #p.trader.start()
 
 
-
 if __name__ == "__main__":
     print('App Start Time : {}'.format(timestampToDate(int(time.time() - time.timezone))))
     root = tk.Tk()
@@ -39,4 +38,3 @@ if __name__ == "__main__":
     main.pack(side="top", fill="both", expand=True)
     root.wm_geometry("1000x1000")
     root.mainloop()
-

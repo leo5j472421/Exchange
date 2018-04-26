@@ -1,12 +1,12 @@
 import logging
 from threading import Thread
 
-import gzip
+import gzip,requests
 import websocket
 
 from function import *
 from model.ticker import Ticker as t
-from ..HuobiServices import *
+from ..api import *
 
 '''
 {
@@ -25,8 +25,6 @@ from ..HuobiServices import *
     }
 }
 '''
-
-
 class Ticker:
 
     def __init__(self, notice=None, currencypair=['BTC_USDT', 'ETH_USDT'], targe=['BTC_USDT']):
@@ -41,7 +39,8 @@ class Ticker:
 
     def resetTick(self, cp):
         pair = self.currencypair[cp].split('_')
-        data = get_ticker(cp)
+        #data = get_ticker(cp)
+        data = json.loads(requests.get('https://api.huobi.pro/market/detail/merged?symbol={}'.format(cp)).text)
         if not data == None:
             data = data['tick']
             tickerData = {
